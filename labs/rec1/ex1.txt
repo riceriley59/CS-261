@@ -1,0 +1,11 @@
+Output:
+
+15 56 12 -21 1 659 3 83 51 3 135 0
+-21 0 1 3 3 12 15 51 56 83 135 659
+
+
+What does function() do?:
+
+It sorts the array in ascending order, I think possibly using a bubble sort 
+which has a time-complexity of O(n^2) and a space-complexity of O(1) or constant
+space.

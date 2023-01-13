@@ -39,10 +39,9 @@ struct list
  */
 struct list* list_create()
 {
-    /*
-     * FIXED ME: 
-     */
-    return NULL;
+    struct list* list = (struct list*)malloc(sizeof(struct list*));
+    list->head = NULL;
+    return list;
 }
 
 /*
@@ -59,9 +58,15 @@ struct list* list_create()
 
 void list_free(struct list* list)
 {
-    /*
-     * FIXED ME: 
-     */
+    struct node* curr = list->head;
+
+    while(curr->next){
+        struct node* temp = curr;
+        curr = curr->next;
+        free(temp);
+        temp = NULL;
+    }
+
     return;
 }
 
@@ -81,9 +86,14 @@ void list_free(struct list* list)
 
 void list_insert(struct list* list, void* val)
 {
-    /*
-     * FIXED ME: 
-     */
+    struct node* new = (struct node*)malloc(sizeof(struct node*));
+    new->val = val;
+
+    struct node* head = list->head;
+
+    list->head = new;
+    new->next = head;
+
     return;
 }
 
@@ -103,9 +113,17 @@ void list_insert(struct list* list, void* val)
 
 void list_insert_end(struct list* list, void* val)
 {
-    /*
-     * FIXED ME: 
-     */
+    struct node* new = (struct node*)malloc(sizeof(struct node*));
+    new->val = val;
+
+    struct node* head = list->head;
+
+    while(head->next){
+        head = head->next;
+    }
+
+    head->next = new;
+
     return;
 }
 
@@ -150,9 +168,19 @@ void list_insert_end(struct list* list, void* val)
  */
 void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b))
 {
-    /*
-     * FIXED ME: 
-     */
+    struct node* curr = list->head;
+    struct node* prev = NULL;
+
+    while(cmp(val, curr->val) != 0){
+        prev = curr;
+        curr = curr->next;
+    }
+
+    prev->next = curr->next;
+    
+    free(curr);
+    curr = NULL; 
+
     return;
 }
 
@@ -169,9 +197,17 @@ void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b))
  */
 void list_remove_end(struct list* list)
 {
-	/*
-     * FIXED ME: 
-     */
+    if(!(list || list->head)) return;
+
+	struct node* curr = list->head;
+
+    while(curr->next->next){ 
+        curr = curr->next; 
+    }
+
+    free(curr->next);
+    curr->next = NULL;
+
     return;
 }
 
@@ -222,9 +258,17 @@ void list_remove_end(struct list* list)
  */
 int list_position(struct list* list, void* val, int (*cmp)(void* a, void* b))
 {
-    /*
-     * FIXED ME: 
-     */
+    struct node* curr = list->head;
+    
+    int idx = 0;
+
+    while(curr){
+        if(cmp(val, curr->val) == 0) return idx;
+
+        curr = curr->next;
+        idx++;
+    }
+
     return -1;
 }
 
@@ -240,8 +284,19 @@ int list_position(struct list* list, void* val, int (*cmp)(void* a, void* b))
  */
 void list_reverse(struct list* list)
 {
-    /*
-     * FIXED ME: 
-     */
+    struct node* curr = list->head;
+    struct node* prev = NULL;
+    struct node* temp = NULL;
+
+    while(curr){
+        temp = curr;
+        curr->next = prev;
+
+        prev = temp;
+        curr = temp->next;
+    }
+
+    list->head = curr;
+
     return;
 }

@@ -41,7 +41,7 @@ struct dynarray* dynarray_create()
     struct dynarray* ptr = (struct dynarray*)malloc(sizeof(struct dynarray));
     ptr->size = 0;
     ptr->capacity = 2;
-    ptr->data = (void*)calloc(2, sizeof(void*));
+    ptr->data = (void*)malloc(2 * sizeof(void*));
 
     return ptr;
 }
@@ -95,15 +95,17 @@ void dynarray_insert(struct dynarray* da, void* val)
     void** old = da->data;
     void** new = (void*)malloc((da->capacity + 1) * sizeof(void*));
     
-    for(int i = 0; i < da->capacity; i++){
+    for(int i = 0; i < da->size; i++){
         new[i] = old[i];
     }
 
+    new[da->size] = val;
+    da->data = new;
+    
     da->capacity++;
     da->size++;
 
-    new[da->size] = val;
-    
+    free(old);
     old = NULL;
 
     return;
@@ -127,14 +129,15 @@ void dynarray_insert(struct dynarray* da, void* val)
 void dynarray_remove(struct dynarray* da, int idx)
 {
     if(da == NULL) return;
-    if(idx < 0 || idx >= da->capacity) return;
+    if(idx < 0 || idx >= da->size) return;
 
     da->data[idx] = NULL;
 
-    for(int i = idx + 1; i < da->capacity; i++){
+    for(int i = idx + 1; i < da->size; i++){
         da->data[i - 1] = da->data[i];
     }
 
+    da->data[da->size - 1] = NULL;
     da->size--;
     
     return;
@@ -153,10 +156,8 @@ void dynarray_remove(struct dynarray* da, int idx)
  */
 void* dynarray_get(struct dynarray* da, int idx)
 {
-    /*
-     * FIXED ME: 
-     */
-    return NULL;
+    if(idx < 0 || idx >= da->size) return NULL;
+    return da->data[idx];
 }
 
 /*
@@ -173,9 +174,7 @@ void* dynarray_get(struct dynarray* da, int idx)
  */
 void dynarray_set(struct dynarray* da, int idx, void* val)
 {
-    /*
-     * FIXED ME: 
-     */
+    da->data[idx] = val;
 
     return; 
 }

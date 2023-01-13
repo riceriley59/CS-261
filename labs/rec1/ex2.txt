@@ -1,0 +1,5 @@
+What does function do?:
+
+The function in ex2 takes a number and returns 1 if
+it is a prime number and 0 otherwise.
+

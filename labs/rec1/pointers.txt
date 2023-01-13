@@ -1,0 +1,33 @@
+1: a = 0x30d404240, b = 0x600001350030, c = 0x30d404280
+
+These are the addresses for two different integer pointers and an integer array. these addresses 
+point to a b and c. a is an integer array, b points to a 16 bit adress on the heap, and c is an 
+empty pointer.
+
+2: a[0] = 200, a[1] = 101, a[2] = 102, a[3] = 103
+
+c is pointed to a's memory address and then each element of a is incremented through starting at
+100 and then adding one. Then at the very end c[0] is set to 200 which points to a so a's first index
+is changed to 200. A is on the stack and has the same memory address, b still has the same memory address
+and c points to the same memory address of a. a and c are the same, and b still points to a 16 bit address 
+on the heap
+
+3: a[0] = 200, a[1] = 300, a[2] = 301, a[3] = 302
+
+c is still pointing to a from there c is used to change values of a to 300 301 and 302. the memory addresses 
+of a b and c are still the same. a now has 300 in the first index 301 in the second index and 302 in the last index.
+
+4: a[0] = 200, a[1] = 400, a[2] = 301, a[3] = 302
+
+c is incremented on and so now it points to the first index in the a array and then that value is changed to 400.
+
+5: a[0] = 200, a[1] = 128144, a[2] = 256, a[3] = 302
+
+c is set to a random memory address by casting it to an integer and char and then incrementing one which only 
+increments the address by one instead of 4 since its a char now and not an int which has size 4, then 
+dereferencing c and setting it to 500 didn't do anything.
+
+6: a = 0x30d404240, b = 0x30d404244, c = 0x30d404241
+
+a still has the same stack memory address and b and c are set to random memory addresses by incrementing the 
+pointer by an offset of an char on an integer array.
