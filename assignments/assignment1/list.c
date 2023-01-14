@@ -289,14 +289,11 @@ void list_reverse(struct list* list)
     struct node* temp = NULL;
 
     while(curr){
-        temp = curr;
+        temp = curr->next;
         curr->next = prev;
-
-        prev = temp;
-        curr = temp->next;
+        prev = curr;
+        curr = temp;
     }
-
-    list->head = curr;
 
     return;
 }
