@@ -119,14 +119,14 @@ void list_insert_end(struct list* list, void* val)
     new->val = val;
     new->next = NULL;
 
-    if(list->head){ 
+    if(list->head == NULL){ 
         list->head = new;
         return;
     }
 
     struct node* curr = list->head;
 
-    while(curr->next){
+    while(curr->next != NULL){
         curr = curr->next;
     }
 
