@@ -68,6 +68,8 @@ void list_free(struct list* list)
     }
 
     list->head = NULL;
+    free(list);
+    list= NULL;
 
     return;
 }
