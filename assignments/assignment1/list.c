@@ -59,13 +59,15 @@ struct list* list_create()
 void list_free(struct list* list)
 {
     struct node* curr = list->head;
+    struct node* next = NULL;
 
-    while(curr->next){
-        struct node* temp = curr;
-        curr = curr->next;
-        free(temp);
-        temp = NULL;
+    while(curr){
+        next = curr->next;
+        free(curr);
+        curr = next;
     }
+
+    list->head = NULL;
 
     return;
 }
@@ -115,14 +117,20 @@ void list_insert_end(struct list* list, void* val)
 {
     struct node* new = (struct node*)malloc(sizeof(struct node*));
     new->val = val;
+    new->next = NULL;
 
-    struct node* head = list->head;
-
-    while(head->next){
-        head = head->next;
+    if(list->head){ 
+        list->head = new;
+        return;
     }
 
-    head->next = new;
+    struct node* curr = list->head;
+
+    while(curr->next){
+        curr = curr->next;
+    }
+
+    curr->next = new;
 
     return;
 }
@@ -171,15 +179,19 @@ void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b))
     struct node* curr = list->head;
     struct node* prev = NULL;
 
-    while(cmp(val, curr->val) != 0){
+    while(curr){
+        if(cmp(val, curr->val) == 0){
+            if(list_position(list, val, cmp) == 0) list->head = curr->next;
+            else prev->next = curr->next;
+
+            free(curr);
+            curr = NULL;
+            break;
+        }
+
         prev = curr;
         curr = curr->next;
-    }
-
-    prev->next = curr->next;
-    
-    free(curr);
-    curr = NULL; 
+    }    
 
     return;
 }
@@ -197,8 +209,6 @@ void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b))
  */
 void list_remove_end(struct list* list)
 {
-    if(!(list || list->head)) return;
-
 	struct node* curr = list->head;
 
     while(curr->next->next){ 
@@ -286,14 +296,16 @@ void list_reverse(struct list* list)
 {
     struct node* curr = list->head;
     struct node* prev = NULL;
-    struct node* temp = NULL;
+    struct node* next = NULL;
 
     while(curr){
-        temp = curr->next;
+        next = curr->next;
         curr->next = prev;
         prev = curr;
-        curr = temp;
+        curr = next;
     }
+
+    list->head = prev;
 
     return;
 }
