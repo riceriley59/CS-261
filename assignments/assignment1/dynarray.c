@@ -92,21 +92,27 @@ int dynarray_size(struct dynarray* da)
  */
 void dynarray_insert(struct dynarray* da, void* val)
 {
-    void** old = da->data;
-    void** new = (void*)malloc((da->capacity + 1) * sizeof(void*));
-    
-    for(int i = 0; i < da->size; i++){
-        new[i] = old[i];
+    if(da->size <= da->capacity){
+        da->data[da->size] = val;
+        da->size++; 
+    }else{
+
+        void** old = da->data;
+        void** new = (void*)malloc((da->capacity * 2) * sizeof(void*));
+        
+        for(int i = 0; i < da->size; i++){
+            new[i] = old[i];
+        }
+
+        new[da->size] = val;
+        da->data = new;
+        
+        da->size++;
+        da->capacity *= 2;
+
+        free(old);
+        old = NULL;
     }
-
-    new[da->size] = val;
-    da->data = new;
-    
-    da->capacity++;
-    da->size++;
-
-    free(old);
-    old = NULL;
 
     return;
 }
