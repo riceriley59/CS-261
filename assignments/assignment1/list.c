@@ -67,7 +67,6 @@ void list_free(struct list* list)
         curr = next;
     }
 
-    list->head = NULL;
     free(list);
     list= NULL;
 
@@ -183,7 +182,7 @@ void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b))
 
     while(curr){
         if(cmp(val, curr->val) == 0){
-            if(list_position(list, val, cmp) == 0) list->head = curr->next;
+            if(curr == list->head) list->head = curr->next;
             else prev->next = curr->next;
 
             free(curr);

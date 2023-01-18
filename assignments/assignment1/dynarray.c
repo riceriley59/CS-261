@@ -92,11 +92,10 @@ int dynarray_size(struct dynarray* da)
  */
 void dynarray_insert(struct dynarray* da, void* val)
 {
-    if(da->size <= da->capacity){
+    if(da->size < da->capacity){
         da->data[da->size] = val;
         da->size++; 
     }else{
-
         void** old = da->data;
         void** new = (void*)malloc((da->capacity * 2) * sizeof(void*));
         
