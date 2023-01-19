@@ -201,12 +201,12 @@ void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b))
         //if the cmp function pointer returns 0 meaning the the curr nodes
         //val and the val we are searching for are equal
         if(cmp(val, curr->val) == 0){
-            //if the node we are looking for is the head then set the head to the curr nodes next pointer
+            //if the node we found is the head then set the head to the curr nodes next pointer
             if(curr == list->head) list->head = curr->next;
-            //otherwise set the previous node's next pointer equal to the curr pointers next skipping curr
+            //otherwise set the previous node's next pointer equal to the curr pointers next--skipping curr
             else prev->next = curr->next;
 
-            //then free the curr node that we found after we have handled makeing sure the list stays 
+            //then free the curr node that we found after we have handled making sure the list stays 
             //intact
             free(curr);
             curr = NULL;
@@ -303,7 +303,7 @@ int list_position(struct list* list, void* val, int (*cmp)(void* a, void* b))
 
     //while current node isn't null step through list starting at the head,
     //and count the index until we have found the node we are looking for
-    //then return that node
+    //then return the index
     while(curr){
         //if the current node were on is the one were looking for then return the
         //idx and stop function execution
