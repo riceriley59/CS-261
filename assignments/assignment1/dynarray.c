@@ -5,8 +5,8 @@
  * functions you might need.  Also, don't forget to include your name and
  * @oregonstate.edu email address below.
  *
- * Name:
- * Email:
+ * Name: Riley Rice
+ * Email: riceri@oregonstate.edu
  */
 
 #include <stdlib.h>
@@ -38,11 +38,15 @@ struct dynarray
  */
 struct dynarray* dynarray_create()
 {
+    //create a pointer on the heap to a new dynarray and set the size to 0 and capacity to 2
     struct dynarray* ptr = (struct dynarray*)malloc(sizeof(struct dynarray));
     ptr->size = 0;
     ptr->capacity = 2;
+
+    //then create an array of 2 void pointer and make the dynarray data pointer point to that
     ptr->data = (void*)malloc(2 * sizeof(void*));
 
+    //return the new data structure
     return ptr;
 }
 
@@ -59,9 +63,10 @@ struct dynarray* dynarray_create()
  */
 void dynarray_free(struct dynarray* da)
 {
-    free(da->data);
+    free(da->data); //free the data array
     da->data = NULL;
 
+    //free the dynamic array data structure 
     free(da);
     da = NULL;
 
@@ -74,6 +79,7 @@ void dynarray_free(struct dynarray* da)
  */
 int dynarray_size(struct dynarray* da)
 {
+    //return the current size
     return da->size;
 }
 
@@ -92,23 +98,32 @@ int dynarray_size(struct dynarray* da)
  */
 void dynarray_insert(struct dynarray* da, void* val)
 {
+    //if our dynamic array isn't full yet then just add the val to the array
     if(da->size < da->capacity){
         da->data[da->size] = val;
         da->size++; 
-    }else{
+    }else{ //if the dynamic array is full then double the capacity of the array and store val in new array
+        //get the old array for copying
         void** old = da->data;
+
+        //create new array double the capacity of the old array
         void** new = (void*)malloc((da->capacity * 2) * sizeof(void*));
         
+        //for each entry in the old array copy that into the new array making a copy
         for(int i = 0; i < da->size; i++){
             new[i] = old[i];
         }
 
+        //set the val they wanted to insert into the new array we created 
+        //then set the dynamic array to point to the new array
         new[da->size] = val;
         da->data = new;
         
+        //increase the size by one and the capacity by a factor of 2
         da->size++;
         da->capacity *= 2;
 
+        //delete the old array
         free(old);
         old = NULL;
     }
@@ -133,15 +148,19 @@ void dynarray_insert(struct dynarray* da, void* val)
  */
 void dynarray_remove(struct dynarray* da, int idx)
 {
-    if(da == NULL) return;
+    //if the index is within range then continue otherwise return
     if(idx < 0 || idx >= da->size) return;
 
+    //set the array element at the given index to NULL
     da->data[idx] = NULL;
 
+    //starting at the next element from the element we set to null move the values back one 
+    //index until we reach the end of the array
     for(int i = idx + 1; i < da->size; i++){
         da->data[i - 1] = da->data[i];
     }
 
+    //set the last element to null and decrease the size by 1
     da->data[da->size - 1] = NULL;
     da->size--;
     
@@ -161,8 +180,10 @@ void dynarray_remove(struct dynarray* da, int idx)
  */
 void* dynarray_get(struct dynarray* da, int idx)
 {
+    //if index is valid then continue otherwise return
     if(idx < 0 || idx >= da->size) return NULL;
-    return da->data[idx];
+    //return the value at the given index
+    else return da->data[idx];
 }
 
 /*
@@ -179,6 +200,9 @@ void* dynarray_get(struct dynarray* da, int idx)
  */
 void dynarray_set(struct dynarray* da, int idx, void* val)
 {
+    //if index is valid then continue otherwise return
+    if(idx < 0 || idx >= da->size) return;
+    //set the element at the given index equal to the given value
     da->data[idx] = val;
 
     return; 

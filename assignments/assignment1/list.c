@@ -5,8 +5,8 @@
  * functions you might need.  Also, don't forget to include your name and
  * @oregonstate.edu email address below.
  *
- * Name:
- * Email:
+ * Name: Riley Rice
+ * Email: riceri@oregonstate.edu
  */
 
 #include <stdlib.h>
@@ -39,9 +39,9 @@ struct list
  */
 struct list* list_create()
 {
-    struct list* list = (struct list*)malloc(sizeof(struct list*));
+    struct list* list = (struct list*)malloc(sizeof(struct list*)); //create new list structure on heap
     list->head = NULL;
-    return list;
+    return list; //return list pointer
 }
 
 /*
@@ -61,14 +61,19 @@ void list_free(struct list* list)
     struct node* curr = list->head;
     struct node* next = NULL;
 
+    //while the current node isn't NULL, we haven't reached the end of the list
     while(curr){
+        //get the next node in the list
         next = curr->next;
+        //delete the current node
         free(curr);
+        //set the current node to the next node
         curr = next;
     }
 
+    //free the list pointer
     free(list);
-    list= NULL;
+    list = NULL;
 
     return;
 }
@@ -89,11 +94,15 @@ void list_free(struct list* list)
 
 void list_insert(struct list* list, void* val)
 {
+    //create a new node and set it's value to val
     struct node* new = (struct node*)malloc(sizeof(struct node*));
     new->val = val;
 
+    //get the list's current head and store it
     struct node* head = list->head;
 
+    //set the head to point to the new node and then make the new node point
+    //to the old list's head
     list->head = new;
     new->next = head;
 
@@ -116,21 +125,27 @@ void list_insert(struct list* list, void* val)
 
 void list_insert_end(struct list* list, void* val)
 {
+    //create a new node and set the val to val
     struct node* new = (struct node*)malloc(sizeof(struct node*));
     new->val = val;
     new->next = NULL;
 
+    //if there are no nodes in the list currently then point the list's 
+    //head to the new node then return
     if(list->head == NULL){ 
         list->head = new;
         return;
     }
 
-    struct node* curr = list->head;
+    struct node* curr = list->head; //set the current pointer to the list's head
 
+    //while the node that the current node points to isn't null keep on iterating
+    //this will put the current pointer at the end of the list
     while(curr->next != NULL){
-        curr = curr->next;
+        curr = curr->next; //iterate to next node
     }
 
+    //set the end equal to the new pointer
     curr->next = new;
 
     return;
@@ -180,16 +195,26 @@ void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b))
     struct node* curr = list->head;
     struct node* prev = NULL;
 
+    //iterate through list until we reach the end or break out starting at
+    //the list's head
     while(curr){
+        //if the cmp function pointer returns 0 meaning the the curr nodes
+        //val and the val we are searching for are equal
         if(cmp(val, curr->val) == 0){
+            //if the node we are looking for is the head then set the head to the curr nodes next pointer
             if(curr == list->head) list->head = curr->next;
+            //otherwise set the previous node's next pointer equal to the curr pointers next skipping curr
             else prev->next = curr->next;
 
+            //then free the curr node that we found after we have handled makeing sure the list stays 
+            //intact
             free(curr);
             curr = NULL;
             break;
         }
 
+        //if we haven't found a match for the val then set prev equal to the curr
+        //and then curr to it's next pointer essentially stepping through the list
         prev = curr;
         curr = curr->next;
     }    
@@ -212,10 +237,13 @@ void list_remove_end(struct list* list)
 {
 	struct node* curr = list->head;
 
+    //while the node in front of the current node isn't the last node
+    //starting at the list's head step through the list
     while(curr->next->next){ 
         curr = curr->next; 
     }
 
+    //free the end node
     free(curr->next);
     curr->next = NULL;
 
@@ -273,13 +301,21 @@ int list_position(struct list* list, void* val, int (*cmp)(void* a, void* b))
     
     int idx = 0;
 
+    //while current node isn't null step through list starting at the head,
+    //and count the index until we have found the node we are looking for
+    //then return that node
     while(curr){
+        //if the current node were on is the one were looking for then return the
+        //idx and stop function execution
         if(cmp(val, curr->val) == 0) return idx;
 
+        //if we still haven't found current node go to next node and increment
+        //index by 1
         curr = curr->next;
         idx++;
     }
 
+    //if we never find the node then return -1
     return -1;
 }
 
@@ -299,13 +335,15 @@ void list_reverse(struct list* list)
     struct node* prev = NULL;
     struct node* next = NULL;
 
+    //while current node isn't empty iterate through list starting at the list's head
     while(curr){
-        next = curr->next;
-        curr->next = prev;
-        prev = curr;
-        curr = next;
+        next = curr->next; //store the current node's pointer to the next node in the list
+        curr->next = prev; // set the current node's next pointer to the previous node in the list
+        prev = curr; // set previous node equal to the current node as it's now the one behind our curr
+        curr = next; // then set curr equal to the next so in the next iteration they can do the same steps
     }
 
+    //at the end set the list head equal to the prev node or the new head node in the reversed list
     list->head = prev;
 
     return;
