@@ -161,8 +161,8 @@ void dynarray_remove(struct dynarray* da, int idx)
     }
 
     //set the last element to null and decrease the size by 1
-    da->data[da->size - 1] = NULL;
     da->size--;
+    da->data[da->size] = NULL;
     
     return;
 
