@@ -30,9 +30,10 @@ struct stack {
  * a pointer to it.
  */
 struct stack* stack_create() {
-	/*
-	 * FIXME:
-	 */
+	struct stack* stack = (struct stack*)malloc(sizeof(struct stack));
+
+	stack->list = list_create();
+
 	return NULL;
 }
 
@@ -46,9 +47,11 @@ struct stack* stack_create() {
  *   stack - the stack to be destroyed.  May not be NULL.
  */
 void stack_free(struct stack* stack) {
-	/*
-	 * FIXME:
-	 */
+	list_free(stack->list);
+
+	free(stack);
+	stack = NULL;
+
 	return;
 }
 
@@ -61,10 +64,8 @@ void stack_free(struct stack* stack) {
  *   stack - the stack whose emptiness is being questioned.  May not be NULL.
  */
 int stack_isempty(struct stack* stack) {
-	/*
-	 * FIXME:
-	 */
-	return 1;
+	if(list_empty(stack->list)) return 1;
+	else return 0;
 }
 
 /*
@@ -78,9 +79,8 @@ int stack_isempty(struct stack* stack) {
  *     which means that a pointer of any type can be passed.
  */
 void stack_push(struct stack* stack, void* val) {
-	/*
-	 * FIXME:
-	 */
+	list_insert(stack->list, val);
+
 	return;
 }
 
@@ -93,10 +93,7 @@ void stack_push(struct stack* stack, void* val) {
  *   stack - the stack from which to query the top value.  May not be NULL.
  */
 void* stack_top(struct stack* stack) {
-	/*
-	 * FIXME:
-	 */
-	return NULL;
+	return return_list_head_position(stack->list);
 }
 
 /*
@@ -110,8 +107,9 @@ void* stack_top(struct stack* stack) {
  *   This function should return the value that was popped.
  */
 void* stack_pop(struct stack* stack) {
-	/*
-	 * FIXME:
-	 */
-	return NULL;
+	void* val = stack_top(stack);
+	
+	remove_beggining(stack->list);
+
+	return val;
 }
