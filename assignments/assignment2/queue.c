@@ -94,7 +94,7 @@ void queue_enqueue(struct queue* queue, void* val) {
  *   queue - the queue from which to query the front value.  May not be NULL.
  */
 void* queue_front(struct queue* queue) {
-	return dynarray_get(queue->array, 0);
+	return dynarray_get_start(queue->array);
 }
 
 /*
@@ -110,7 +110,7 @@ void* queue_front(struct queue* queue) {
 void* queue_dequeue(struct queue* queue) {
 	void* val = queue_front(queue);
 
-	dynarray_remove(queue->array, 0);
+	dynarray_remove_from_front(queue->array);
 
 	return val;
 }

@@ -52,7 +52,7 @@ void answer_a_call(struct stack* stack, struct queue* queue){
 		return;
 	}
 
-	printf("\nThe following call has been answered and added to the stack!\n");
+	printf("\nThe following call has been answered and added to the stack!\n\n");
 
 	struct call* call = queue_dequeue(queue);
 

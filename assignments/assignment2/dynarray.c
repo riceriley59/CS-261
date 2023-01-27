@@ -16,6 +16,7 @@ struct dynarray {
   void** data;
   int size;
   int capacity;
+  int start;
 };
 
 #define DYNARRAY_INIT_CAPACITY 4
@@ -32,6 +33,7 @@ struct dynarray* dynarray_create() {
   assert(da->data);
   da->size = 0;
   da->capacity = DYNARRAY_INIT_CAPACITY;
+  da->start = 0;
 
   return da;
 }
@@ -77,7 +79,7 @@ void _dynarray_resize(struct dynarray* da, int new_capacity) {
    * Copy data from the old array to the new one.
    */
   for (int i = 0; i < da->size; i++) {
-    new_data[i] = da->data[i];
+    new_data[i] = da->data[(da->start + i) % da->capacity];
   }
 
   /*
@@ -86,6 +88,7 @@ void _dynarray_resize(struct dynarray* da, int new_capacity) {
   free(da->data);
   da->data = new_data;
   da->capacity = new_capacity;
+  da->start = 0;
 }
 
 /*
@@ -107,10 +110,12 @@ void dynarray_insert(struct dynarray* da, void* val) {
     _dynarray_resize(da, 2 * da->capacity);
   }
 
+  int physical = (da->start + da->size) % da->capacity;
+
   /*
    * Put the new element at the end of the array.
    */
-  da->data[da->size] = val;
+  da->data[physical] = val;
   da->size++;
 }
 
@@ -173,4 +178,16 @@ void dynarray_set(struct dynarray* da, int idx, void* val) {
   assert(idx < da->size && idx >= 0);
 
   da->data[idx] = val;
+}
+
+void dynarray_remove_from_front(struct dynarray* da){
+  da->data[da->start] = NULL;
+  da->start++;
+  da->size--;
+}
+
+void* dynarray_get_start(struct dynarray* da){
+  assert(da);
+  
+  return da->data[da->start];
 }
