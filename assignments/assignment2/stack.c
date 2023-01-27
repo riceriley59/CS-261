@@ -48,10 +48,7 @@ struct stack* stack_create() {
  */
 void stack_free(struct stack* stack) {
 	list_free(stack->list);
-	stack->list = NULL;
-
 	free(stack);
-	stack = NULL;
 
 	return;
 }

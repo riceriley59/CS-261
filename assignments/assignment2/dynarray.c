@@ -180,10 +180,12 @@ void dynarray_set(struct dynarray* da, int idx, void* val) {
   da->data[idx] = val;
 }
 
-void dynarray_remove_from_front(struct dynarray* da){
+void dynarray_remove_from_start(struct dynarray* da){
   da->data[da->start] = NULL;
   da->start++;
   da->size--;
+
+  if(da->start == da->capacity) da->start = 0;
 }
 
 void* dynarray_get_start(struct dynarray* da){

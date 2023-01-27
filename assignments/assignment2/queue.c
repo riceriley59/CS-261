@@ -48,10 +48,7 @@ struct queue* queue_create() {
  */
 void queue_free(struct queue* queue) {
 	dynarray_free(queue->array);
-	queue->array = NULL;
-
 	free(queue);
-	queue = NULL;
 
   	return;
 }
@@ -110,7 +107,7 @@ void* queue_front(struct queue* queue) {
 void* queue_dequeue(struct queue* queue) {
 	void* val = queue_front(queue);
 
-	dynarray_remove_from_front(queue->array);
+	dynarray_remove_from_start(queue->array);
 
 	return val;
 }
