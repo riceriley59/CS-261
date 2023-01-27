@@ -24,6 +24,7 @@ struct node {
  */
 struct list {
   struct node* head;
+  int size;
 };
 
 /*
@@ -33,6 +34,7 @@ struct list {
 struct list* list_create() {
   struct list* list = malloc(sizeof(struct list));
   list->head = NULL;
+  list->size = 0;
   return list;
 }
 
@@ -75,10 +77,12 @@ void list_insert(struct list* list, void* val) {
   /*
    * Create new node and insert at head.
    */
-  struct node* temp = malloc(sizeof(struct node));
+  struct node* temp = (struct node*)malloc(sizeof(struct node));
   temp->val = val;
   temp->next = list->head;
   list->head = temp;
+
+  list->size++;
 }
 
 /*
@@ -120,6 +124,8 @@ void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b)) {
 
     prev = curr;
     curr = curr->next;
+
+    list->size--;
   }
 }
 
@@ -201,11 +207,11 @@ void list_reverse(struct list* list) {
 }
 
 int list_empty(struct list* list){
-  if(list->head == NULL) return 1;
+  if(list->size == 0) return 1;
   else return 0;
 }
 
-void* return_list_head_position(struct list* list){
+void* return_headvalue(struct list* list){
   return list->head->val;
 }
 
@@ -216,4 +222,10 @@ void remove_beggining(struct list* list){
 
   free(curr);
   curr = NULL;
+
+  list->size--;
+}
+
+int get_list_size(struct list* list){
+  return list->size;
 }

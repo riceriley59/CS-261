@@ -32,10 +32,12 @@ struct queue_from_stacks {
  * and return a pointer to it.
  */
 struct queue_from_stacks* queue_from_stacks_create() {
-  	/*
-	 * FIXME:
-	 */
-  	return NULL;
+  	struct queue_from_stacks* queue_from_stacks = malloc(sizeof(struct queue_from_stacks));
+
+	queue_from_stacks->s1 = stack_create();
+	queue_from_stacks->s2 = stack_create();
+
+  	return queue_from_stacks;
 }
 
 /*
@@ -48,9 +50,15 @@ struct queue_from_stacks* queue_from_stacks_create() {
  *   qfs - the queue-from-stacks to be destroyed.  May not be NULL.
  */
 void queue_from_stacks_free(struct queue_from_stacks* qfs) {
-  	/*
-	 * FIXME:
-	 */
+  	stack_free(qfs->s1);
+	qfs->s1 = NULL;
+
+	stack_free(qfs->s2);
+	qfs->s2 = NULL;
+
+	free(qfs);
+	qfs = NULL;
+
   	return;
 }
 
@@ -64,10 +72,8 @@ void queue_from_stacks_free(struct queue_from_stacks* qfs) {
  *     be NULL.
  */
 int queue_from_stacks_isempty(struct queue_from_stacks* qfs) {
-  	/*
-	 * FIXME:
-	 */
-  	return 1;
+  	if(stack_isempty(qfs->s1) && stack_isempty(qfs->s2)) return 1;
+	else return 0;
 }
 
 /*
@@ -81,9 +87,8 @@ int queue_from_stacks_isempty(struct queue_from_stacks* qfs) {
  *     which means that a pointer of any type can be passed.
  */
 void queue_from_stacks_enqueue(struct queue_from_stacks* qfs, void* val) {
-  	/*
-	 * FIXME:
-	 */
+  	stack_push(qfs->s1, val);
+
   	return;
 }
 
@@ -95,10 +100,18 @@ void queue_from_stacks_enqueue(struct queue_from_stacks* qfs, void* val) {
  *   qfs - the queue-from-stacks from which to query the front value.  May not be NULL.
  */
 void* queue_from_stacks_front(struct queue_from_stacks* qfs) {
-  	/*
-	 * FIXME:
-	 */
-  	return NULL;
+	void* val = NULL;
+
+	if(stack_isempty(qfs->s2)){
+		while(!stack_isempty(qfs->s1)){
+			val = stack_pop(qfs->s1);
+			stack_push(qfs->s2, val);
+		}
+	}
+
+	val = stack_top(qfs->s2);
+
+	return val;	
 }
 
 /*
@@ -113,8 +126,16 @@ void* queue_from_stacks_front(struct queue_from_stacks* qfs) {
  *   This function should return the value that was dequeued.
  */
 void* queue_from_stacks_dequeue(struct queue_from_stacks* qfs) {
-  	/*
-	 * FIXME:
-	 */
-  	return NULL;
+	void* val = NULL;
+
+	if(stack_isempty(qfs->s2)){
+		while(!stack_isempty(qfs->s1)){
+			val = stack_pop(qfs->s1);
+			stack_push(qfs->s2, val);
+		}
+	}
+
+	val = stack_pop(qfs->s2);
+
+  	return val;
 }

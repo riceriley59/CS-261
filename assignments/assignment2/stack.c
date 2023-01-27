@@ -34,7 +34,7 @@ struct stack* stack_create() {
 
 	stack->list = list_create();
 
-	return NULL;
+	return stack;
 }
 
 /*
@@ -48,6 +48,7 @@ struct stack* stack_create() {
  */
 void stack_free(struct stack* stack) {
 	list_free(stack->list);
+	stack->list = NULL;
 
 	free(stack);
 	stack = NULL;
@@ -93,7 +94,7 @@ void stack_push(struct stack* stack, void* val) {
  *   stack - the stack from which to query the top value.  May not be NULL.
  */
 void* stack_top(struct stack* stack) {
-	return return_list_head_position(stack->list);
+	return return_headvalue(stack->list);
 }
 
 /*
@@ -112,4 +113,8 @@ void* stack_pop(struct stack* stack) {
 	remove_beggining(stack->list);
 
 	return val;
+}
+
+int stack_size(struct stack* stack){
+	return get_list_size(stack->list);
 }

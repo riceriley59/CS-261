@@ -26,7 +26,8 @@ int list_position(struct list* list, void* val, int (*cmp)(void* a, void* b));
 void list_reverse(struct list* list);
 
 int list_empty(struct list* list);
-void* return_list_head_position(struct list* list);
+void* return_headvalue(struct list* list);
 void remove_beggining(struct list* list);
+int get_list_size(struct list* list);
 
 #endif

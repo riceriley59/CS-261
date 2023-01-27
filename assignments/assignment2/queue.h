@@ -24,4 +24,6 @@ void queue_enqueue(struct queue* queue, void* val);
 void* queue_front(struct queue* queue);
 void* queue_dequeue(struct queue* queue);
 
+int queue_size(struct queue* queue);
+
 #endif
