@@ -50,6 +50,9 @@ void dynarray_free(struct dynarray* da) {
   assert(da);
   free(da->data);
   free(da);
+
+  da->data = NULL;
+  da = NULL;
 }
 
 /*
