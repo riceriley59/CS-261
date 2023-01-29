@@ -182,10 +182,8 @@ void dynarray_set(struct dynarray* da, int idx, void* val) {
 
 void dynarray_remove_from_start(struct dynarray* da){
   da->data[da->start] = NULL;
-  da->start++;
+  da->start = (da->start + 1) % da->capacity;
   da->size--;
-
-  if(da->start == da->capacity) da->start = 0;
 }
 
 void* dynarray_get_start(struct dynarray* da){
