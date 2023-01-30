@@ -59,7 +59,6 @@ void answer_a_call(struct stack* stack, struct queue* queue){
 	stack_push(stack, (void*)call);
 
 	print_call(call);
-	free(call);
 }
 
 void current_stack(struct stack* stack){
