@@ -36,7 +36,7 @@ void recieve_new_call(int* id, struct queue* queue){
 	*id = *id + 1;
 
 	printf("\nEnter Caller's name: ");
-	scaf("%s", newcall->name);
+	scanf("%s", newcall->name);
 	getchar();
 
 	printf("Enter Caller's reason: ");
