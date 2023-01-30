@@ -55,8 +55,7 @@ void list_free(struct list* list) {
   struct node* next, * curr = list->head;
   while (curr != NULL) {
     next = curr->next;
-    if(curr->val != NULL) free(curr->val);
-    free(curr);
+    free(curr->val);
     curr = next;
   }
 
