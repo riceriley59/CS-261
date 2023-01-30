@@ -28,13 +28,15 @@ void quit_program(int* quit){
 }
 
 void recieve_new_call(int* id, struct queue* queue){
+	int c;
+
 	struct call* newcall = malloc(sizeof(struct call));
 
 	newcall->id = *id;
 	*id = *id + 1;
 
 	printf("\nEnter Caller's name: ");
-	scanf("%s", newcall->name);
+	fgets(newcall->name, sizeof(newcall->name), stdin);
 	getchar();
 
 	printf("Enter Caller's reason: ");
