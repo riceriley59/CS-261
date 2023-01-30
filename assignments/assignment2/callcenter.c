@@ -15,9 +15,7 @@ struct call{
 	char reason[255];
 };
 
-void print_call(void* scall){
-	struct call* call = scall;
-
+void print_call(struct call* call){
 	printf("Call ID: %d\n", call->id);
 	printf("Caller's name: %s\n", call->name);
 	printf("Caller's reason: %s\n", call->reason);
@@ -56,11 +54,12 @@ void answer_a_call(struct stack* stack, struct queue* queue){
 
 	printf("\nThe following call has been answered and added to the stack!\n\n");
 
-	void* call = queue_dequeue(queue);
+	struct call* call = queue_dequeue(queue);
 
-	stack_push(stack, call);
+	stack_push(stack, (void*)call);
 
 	print_call(call);
+	free(call);
 }
 
 void current_stack(struct stack* stack){
