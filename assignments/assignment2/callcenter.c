@@ -182,6 +182,28 @@ void handle_option(int option, int* id, int* quit, struct stack* stack, struct q
 }
 
 /*
+ * This function will handle freeing all the data structures and data within those data structures.
+ *
+ * Params:
+ *   stack - The stack which will be used for keeping track of answered calls. May not be NULL.
+ *   queue - The queue which will be used for keeping track of calls to be answered. May not be NULL.
+ */
+void free_data(struct queue* queue, struct stack* stack){
+	while(!stack_isempty(stack)){
+		void* val = stack_pop(stack);
+		free(val);
+	}
+
+	while(!queue_isempty(queue)){
+		void* val = queue_dequeue(queue);
+		free(val);
+	}
+	
+	stack_free(stack);
+	queue_free(queue);
+}
+
+/*
  * This is the main function which handles creating our needed data sctructures
  * and then getting user input and calling the corresponding function until the user quits.
  * After the user quits the memory in the data structures will be freed, and the program will
@@ -216,8 +238,7 @@ int main(int argc, char const *argv[]) {
 	}
 
 	//free data structures
-	stack_free(stack);
-	queue_free(queue);
+	free_data(queue, stack);
 	
 	//exit
 	return 0;
