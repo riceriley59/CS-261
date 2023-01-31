@@ -5,8 +5,8 @@
  * might need.  Also, don't forget to include your name and @oregonstate.edu
  * email address below.
  *
- * Name:
- * Email:
+ * Name: Riley Rice
+ * Email: riceri@oregonstate.edu
  */
 
 #include <stdlib.h>
@@ -112,6 +112,15 @@ void* stack_pop(struct stack* stack) {
 	return val;
 }
 
+/*
+ * This function should return the number of elements stored in the stack.
+ *
+ * Params:
+ *   stack - the stack from which the size is to be checked.  May not be NULL.
+ *
+ * Return:
+ *   This function should return the size of the stack.
+ */
 int stack_size(struct stack* stack){
 	return get_list_size(stack->list);
 }

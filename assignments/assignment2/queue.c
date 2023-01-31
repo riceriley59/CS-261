@@ -112,6 +112,15 @@ void* queue_dequeue(struct queue* queue) {
 	return val;
 }
 
+/*
+ * This function should return the number of elements stored in the queue.
+ *
+ * Params:
+ *   queue - the queue from which the size is to be checked. May not be NULL.
+ *
+ * Return:
+ *   This function should return the the size of the queue.
+ */
 int queue_size(struct queue* queue){
 	return dynarray_size(queue->array);
 }

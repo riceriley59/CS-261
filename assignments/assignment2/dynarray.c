@@ -79,6 +79,8 @@ void _dynarray_resize(struct dynarray* da, int new_capacity) {
    * Copy data from the old array to the new one.
    */
   for (int i = 0; i < da->size; i++) {
+    //re-index elements when expanding. Putting physical elements and logical elements
+    //equal to each other
     new_data[i] = da->data[(da->start + i) % da->capacity];
   }
 
@@ -88,6 +90,8 @@ void _dynarray_resize(struct dynarray* da, int new_capacity) {
   free(da->data);
   da->data = new_data;
   da->capacity = new_capacity;
+
+  //set start back to 0 and we just reindexed array
   da->start = 0;
 }
 
@@ -180,12 +184,30 @@ void dynarray_set(struct dynarray* da, int idx, void* val) {
   da->data[idx] = val;
 }
 
+/*
+ * This function removes from the start of the list and then iterates the start 
+ * by one and if it's at the end then circle around using physical addressing and
+ * a circular buffer. Also decrease size by one.
+ *
+ * Params:
+ *   da - The dynamic array in which the element is removed from. May not be NULL.
+ */
 void dynarray_remove_from_start(struct dynarray* da){
   da->data[da->start] = NULL;
   da->start = (da->start + 1) % da->capacity;
   da->size--;
 }
 
+/*
+ * This function returns the value at the start of our dynamic array, it should
+ * return a void*. Will not remove value just return it  
+ *
+ * Params:
+ *   da - The dynamic array in which the element is getting taken from. May not be NULL.
+ * 
+ * Return:
+ *   This function should return a void* which will be a value in the start index of the array.
+ */
 void* dynarray_get_start(struct dynarray* da){
   assert(da);
   

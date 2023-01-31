@@ -35,6 +35,7 @@ struct list* list_create() {
   struct list* list = malloc(sizeof(struct list));
   list->head = NULL;
   list->size = 0;
+
   return list;
 }
 
@@ -207,15 +208,14 @@ void list_reverse(struct list* list) {
 }
 
 /*
- * This functions checks to make sure whether the linked list is empty.  
+ * This function checks to make sure whether the linked list is empty.  
  *
  * Params:
- *   list - the linked list in which we are checkin the contents of. 
- *     May not be NULL.  When this function returns this should 
- *     return 1 if the list is empty and 0 if it isn't.
+ *   list - the linked list in which we are checking the contents of. 
+ *     The list may not be NULL.
  * 
  * Return:
- *   This function return 1 if the list is empty and 0 if the list isn't
+ *   This function returns 1 if the list is empty and 0 if the list isn't
  *     meaning it has node with data in it still.
  */
 int list_empty(struct list* list){
@@ -224,34 +224,33 @@ int list_empty(struct list* list){
 }
 
 /*
- * This functions checks to make sure whether the linked list is empty.  
+ * This function returns the value at the head of list, it should
+ * return a void*  
  *
  * Params:
- *   list - the linked list in which we are checkin the contents of. 
- *     May not be NULL.  When this function returns this should 
- *     return 1 if the list is empty and 0 if it isn't.
+ *   list - the linked list in which we are checking the contents of. 
+ *     The list may not be NULL.
  * 
  * Return:
- *   This function return 1 if the list is empty and 0 if the list isn't
- *     meaning it has node with data in it still.
+ *   This function should return a void* which will be a value in the head
+ *   node.
  */
 void* return_headvalue(struct list* list){
   return list->head->val;
 }
 
 /*
- * This functions checks to make sure whether the linked list is empty.  
+ * This function removes the beginning of the list making the new head of the 
+ * list the old head's next node. 
  *
  * Params:
  *   list - the linked list in which we are checkin the contents of. 
- *     May not be NULL.  When this function returns this should 
- *     return 1 if the list is empty and 0 if it isn't.
- * 
- * Return:
- *   This function return 1 if the list is empty and 0 if the list isn't
- *     meaning it has node with data in it still.
+ *     May not be NULL. If the head is null then nothing will be removed
+ *     from list.
  */
 void remove_beggining(struct list* list){
+  if(list->head == NULL) return;
+
   struct node* curr = list->head;
 
   list->head = curr->next;
@@ -263,16 +262,16 @@ void remove_beggining(struct list* list){
 }
 
 /*
- * This functions checks to make sure whether the linked list is empty.  
+ * This function returns the size of the list by keeping track of every node
+ * that is added and deleted. 
  *
  * Params:
  *   list - the linked list in which we are checkin the contents of. 
- *     May not be NULL.  When this function returns this should 
- *     return 1 if the list is empty and 0 if it isn't.
+ *     May not be NULL.
  * 
  * Return:
- *   This function return 1 if the list is empty and 0 if the list isn't
- *     meaning it has node with data in it still.
+ *   This function returns the size of attribute of the linked list struct
+ *   which will keep track of every node inserted.
  */
 int get_list_size(struct list* list){
   return list->size;
