@@ -80,7 +80,7 @@ void _dynarray_resize(struct dynarray* da, int new_capacity) {
    */
   for (int i = 0; i < da->size; i++) {
     //re-index elements when expanding. Putting physical elements and logical elements
-    //equal to each other
+    //equal to each other.
     new_data[i] = da->data[(da->start + i) % da->capacity];
   }
 
