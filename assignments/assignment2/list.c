@@ -206,15 +206,51 @@ void list_reverse(struct list* list) {
   }
 }
 
+/*
+ * This functions checks to make sure whether the linked list is empty.  
+ *
+ * Params:
+ *   list - the linked list in which we are checkin the contents of. 
+ *     May not be NULL.  When this function returns this should 
+ *     return 1 if the list is empty and 0 if it isn't.
+ * 
+ * Return:
+ *   This function return 1 if the list is empty and 0 if the list isn't
+ *     meaning it has node with data in it still.
+ */
 int list_empty(struct list* list){
   if(list->size == 0) return 1;
   else return 0;
 }
 
+/*
+ * This functions checks to make sure whether the linked list is empty.  
+ *
+ * Params:
+ *   list - the linked list in which we are checkin the contents of. 
+ *     May not be NULL.  When this function returns this should 
+ *     return 1 if the list is empty and 0 if it isn't.
+ * 
+ * Return:
+ *   This function return 1 if the list is empty and 0 if the list isn't
+ *     meaning it has node with data in it still.
+ */
 void* return_headvalue(struct list* list){
   return list->head->val;
 }
 
+/*
+ * This functions checks to make sure whether the linked list is empty.  
+ *
+ * Params:
+ *   list - the linked list in which we are checkin the contents of. 
+ *     May not be NULL.  When this function returns this should 
+ *     return 1 if the list is empty and 0 if it isn't.
+ * 
+ * Return:
+ *   This function return 1 if the list is empty and 0 if the list isn't
+ *     meaning it has node with data in it still.
+ */
 void remove_beggining(struct list* list){
   struct node* curr = list->head;
 
@@ -226,6 +262,18 @@ void remove_beggining(struct list* list){
   list->size--;
 }
 
+/*
+ * This functions checks to make sure whether the linked list is empty.  
+ *
+ * Params:
+ *   list - the linked list in which we are checkin the contents of. 
+ *     May not be NULL.  When this function returns this should 
+ *     return 1 if the list is empty and 0 if it isn't.
+ * 
+ * Return:
+ *   This function return 1 if the list is empty and 0 if the list isn't
+ *     meaning it has node with data in it still.
+ */
 int get_list_size(struct list* list){
   return list->size;
 }

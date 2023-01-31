@@ -28,8 +28,6 @@ void quit_program(int* quit){
 }
 
 void recieve_new_call(int* id, struct queue* queue){
-	int c;
-
 	struct call* newcall = malloc(sizeof(struct call));
 
 	newcall->id = *id;
