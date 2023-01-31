@@ -32,6 +32,7 @@ struct list {
  * returns a pointer to it.
  */
 struct list* list_create() {
+  //create new list
   struct list* list = malloc(sizeof(struct list));
   list->head = NULL;
   list->size = 0;
@@ -219,6 +220,7 @@ void list_reverse(struct list* list) {
  *     meaning it has node with data in it still.
  */
 int list_empty(struct list* list){
+  //if list empty then return 1 otherwise return 0
   if(list->size == 0) return 1;
   else return 0;
 }
@@ -236,6 +238,7 @@ int list_empty(struct list* list){
  *   node.
  */
 void* return_headvalue(struct list* list){
+  //return head value
   return list->head->val;
 }
 
@@ -249,15 +252,19 @@ void* return_headvalue(struct list* list){
  *     from list.
  */
 void remove_beggining(struct list* list){
+  //if there is no beginning then don't do anything
   if(list->head == NULL) return;
 
   struct node* curr = list->head;
 
+  //set the new head to the old head's next element
   list->head = curr->next;
 
+  //free old head
   free(curr);
   curr = NULL;
 
+  //decrease size
   list->size--;
 }
 

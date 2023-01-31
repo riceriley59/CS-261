@@ -30,8 +30,10 @@ struct stack {
  * a pointer to it.
  */
 struct stack* stack_create() {
+	//create stack
 	struct stack* stack = (struct stack*)malloc(sizeof(struct stack));
 
+	//create stack
 	stack->list = list_create();
 
 	return stack;
@@ -47,6 +49,7 @@ struct stack* stack_create() {
  *   stack - the stack to be destroyed.  May not be NULL.
  */
 void stack_free(struct stack* stack) {
+	//free list
 	list_free(stack->list);
 	free(stack);
 
@@ -77,6 +80,7 @@ int stack_isempty(struct stack* stack) {
  *     which means that a pointer of any type can be passed.
  */
 void stack_push(struct stack* stack, void* val) {
+	//insert into top of list
 	list_insert(stack->list, val);
 
 	return;
@@ -91,6 +95,7 @@ void stack_push(struct stack* stack, void* val) {
  *   stack - the stack from which to query the top value.  May not be NULL.
  */
 void* stack_top(struct stack* stack) {
+	//get the head value from the list
 	return return_headvalue(stack->list);
 }
 
@@ -105,10 +110,13 @@ void* stack_top(struct stack* stack) {
  *   This function should return the value that was popped.
  */
 void* stack_pop(struct stack* stack) {
+	//get top
 	void* val = stack_top(stack);
 	
+	//remove from the top
 	remove_beggining(stack->list);
 
+	//return that value
 	return val;
 }
 

@@ -77,6 +77,7 @@ int queue_isempty(struct queue* queue) {
  *     which means that a pointer of any type can be passed.
  */
 void queue_enqueue(struct queue* queue, void* val) {
+	//insert into beginning of array
 	dynarray_insert(queue->array, val);
 
 	return;
@@ -91,6 +92,7 @@ void queue_enqueue(struct queue* queue, void* val) {
  *   queue - the queue from which to query the front value.  May not be NULL.
  */
 void* queue_front(struct queue* queue) {
+	//return start value
 	return dynarray_get_start(queue->array);
 }
 
@@ -105,10 +107,13 @@ void* queue_front(struct queue* queue) {
  *   This function should return the value that was dequeued.
  */
 void* queue_dequeue(struct queue* queue) {
+	//get top value
 	void* val = queue_front(queue);
 
+	//remove from the start
 	dynarray_remove_from_start(queue->array);
 
+	//return top value
 	return val;
 }
 
@@ -122,5 +127,6 @@ void* queue_dequeue(struct queue* queue) {
  *   This function should return the the size of the queue.
  */
 int queue_size(struct queue* queue){
+	//return queue size
 	return dynarray_size(queue->array);
 }

@@ -114,6 +114,7 @@ void dynarray_insert(struct dynarray* da, void* val) {
     _dynarray_resize(da, 2 * da->capacity);
   }
 
+  //get the physical address for next element
   int physical = (da->start + da->size) % da->capacity;
 
   /*
@@ -193,8 +194,13 @@ void dynarray_set(struct dynarray* da, int idx, void* val) {
  *   da - The dynamic array in which the element is removed from. May not be NULL.
  */
 void dynarray_remove_from_start(struct dynarray* da){
+  //set start to null
   da->data[da->start] = NULL;
+
+  //increment start by 1 with a circular buffer implemented
   da->start = (da->start + 1) % da->capacity;
+
+  //decrease size
   da->size--;
 }
 

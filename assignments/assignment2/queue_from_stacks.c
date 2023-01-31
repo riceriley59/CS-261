@@ -32,11 +32,14 @@ struct queue_from_stacks {
  * and return a pointer to it.
  */
 struct queue_from_stacks* queue_from_stacks_create() {
+	//create new data structure
   	struct queue_from_stacks* queue_from_stacks = malloc(sizeof(struct queue_from_stacks));
 
+	//create both stacks
 	queue_from_stacks->s1 = stack_create();
 	queue_from_stacks->s2 = stack_create();
-
+	
+	//return pointers
   	return queue_from_stacks;
 }
 
@@ -50,12 +53,15 @@ struct queue_from_stacks* queue_from_stacks_create() {
  *   qfs - the queue-from-stacks to be destroyed.  May not be NULL.
  */
 void queue_from_stacks_free(struct queue_from_stacks* qfs) {
+	//free first stack
   	stack_free(qfs->s1);
 	qfs->s1 = NULL;
 
+	//free second stack
 	stack_free(qfs->s2);
 	qfs->s2 = NULL;
 
+	//free this data structure
 	free(qfs);
 	qfs = NULL;
 
@@ -72,6 +78,7 @@ void queue_from_stacks_free(struct queue_from_stacks* qfs) {
  *     be NULL.
  */
 int queue_from_stacks_isempty(struct queue_from_stacks* qfs) {
+	//if both stacks are empty then the queue is empty
   	if(stack_isempty(qfs->s1) && stack_isempty(qfs->s2)) return 1;
 	else return 0;
 }
@@ -87,6 +94,7 @@ int queue_from_stacks_isempty(struct queue_from_stacks* qfs) {
  *     which means that a pointer of any type can be passed.
  */
 void queue_from_stacks_enqueue(struct queue_from_stacks* qfs, void* val) {
+	//push elements into input stack
   	stack_push(qfs->s1, val);
 
   	return;
@@ -102,6 +110,8 @@ void queue_from_stacks_enqueue(struct queue_from_stacks* qfs, void* val) {
 void* queue_from_stacks_front(struct queue_from_stacks* qfs) {
 	void* val = NULL;
 
+	//if output stack is empty then pop elements out of the input stack 
+	//and put it in the output stack until the input stack is empty
 	if(stack_isempty(qfs->s2)){
 		while(!stack_isempty(qfs->s1)){
 			val = stack_pop(qfs->s1);
@@ -109,8 +119,10 @@ void* queue_from_stacks_front(struct queue_from_stacks* qfs) {
 		}
 	}
 
+	//get the value at the top of the output stack
 	val = stack_top(qfs->s2);
 
+	//return that value
 	return val;	
 }
 
@@ -128,6 +140,8 @@ void* queue_from_stacks_front(struct queue_from_stacks* qfs) {
 void* queue_from_stacks_dequeue(struct queue_from_stacks* qfs) {
 	void* val = NULL;
 
+	//if the output stack is empty then pop all the elements out of the first
+	//stack and push it into the second stack.
 	if(stack_isempty(qfs->s2)){
 		while(!stack_isempty(qfs->s1)){
 			val = stack_pop(qfs->s1);
@@ -135,7 +149,9 @@ void* queue_from_stacks_dequeue(struct queue_from_stacks* qfs) {
 		}
 	}
 
+	//pop the element off of the output stack
 	val = stack_pop(qfs->s2);
 
+	//return that value
   	return val;
 }
