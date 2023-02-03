@@ -1,0 +1,28 @@
+#!/usr/bin/env gnuplot
+#
+# This is a simple script that will plot a TSV file as a line graph using
+# gnuplot.  You can run it like so.
+#
+#   ./generate_plot_from_tsv
+#
+# Importantly, make sure you set the values of the variables INFILE and OUTFILE
+# below as follows:
+#   INFILE - should contain the name of the TSV file containing data to be
+#     plotted, e.g. "results.tsv"
+#   OUTFILE - should contain the name of a JPEG file to which the generated
+#     plot image will be saved, e.g. "plot.jpg"
+#
+
+#
+# Modify these filenames to match the name of the TSV file where your data
+# lives (INFILE) and the name of the JPEG file where you want to save the
+# generated plot image (OUTFILE).
+#
+INFILE="tsv/eight_result.tsv"
+OUTFILE="tsv/eight_result_plot.jpg"
+
+set terminal jpeg
+set style data lines
+set output OUTFILE
+
+plot INFILE

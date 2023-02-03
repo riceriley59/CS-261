@@ -1,0 +1,20 @@
+For the first requirement the dynamic array and the linked list are going to perform almost identically
+as they both have the same time complexity for iterating through the list. In order to go through and 
+write these log entries into a file you will have to go through each list which will have a 
+O(n) time complexity.
+
+The second requirement stating that the system does not need direct access takes out the advantage that 
+a dynamic array would have on a linked list. This is because unlike linked lists dynamic arrays allow
+direct access which can be advantagious in lots of other systems. 
+
+The third requirement states a memory constraint within our real-time system stating that we don't have
+a lot of available on-board memory. This will instantly point towards using a linked list as a standard 
+dynamic array will double it's capacity every time it fills up, which allows it to be efficient in terms
+of run-time although it creates a lot of excess memory, especially as more resizes happen, that may never be 
+used. This is something we can't let happen when we have a memory constraint so the dynamic array won't work 
+well in this situation.
+
+Overall, after looking at the constraints of this system I would personally go with a linked list as my 
+chosen data structure mainly because of the small memory constraint, and when looking at the other constraints
+there aren't any clear advantages of using one or the other as they perform about the same, and no direct access
+is needed.

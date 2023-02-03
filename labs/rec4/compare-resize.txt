@@ -1,0 +1,23 @@
+When looking at different resizing methods for our dynamic array data structure 
+I noticed that some techniques were way more efficient than others, and some weren't 
+too much different. The different techniques that I tried were:
+    1. multiply the capacity by four every resize
+    2. multiply the capacity by eight every resize
+    3. multiply the capacity by three every resize 
+     
+(I also tried adding one to the capacity every time, but it was so slow that I 
+stopped running it and couldn't plot it. Although let it be known that it's bad.)
+
+When increasing the doubling size by a factor of 2 I actually noticed that they 
+would perform slightly better than the standard resizing method. Although they 
+would take up a lot more space that would probably not be used. This includes
+the four and eight resize. 
+
+After doing that I wondered if the efficiency had something to do with powers of 2
+so I tried resizing by a factor of 3 and it actually performed super similiar which is 
+reasonable as there isn't as much a difference between 2 and 3.
+
+Overall, the differences were minimal and out of all the techniques the normal resizing
+method took up the least excess space which means while it isn't the most runtime efficient
+it is the most space efficient and so that combination compared to the others is the best
+choice, which is also probably why it is the standard resizing method for the dynamic array.
