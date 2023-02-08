@@ -1,0 +1,3 @@
+I struggled most on the midterm with finding the runtime based on the runtime complexity and the number of 
+elements; Although, I am starting to understand more how to solve them with cross multiplication. I also struggled
+with looking at a snippet of code and finding the best-case runtime complexity.  
