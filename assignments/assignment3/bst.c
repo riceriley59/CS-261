@@ -442,7 +442,7 @@ int bst_iterator_has_next(struct bst_iterator* iter) {
 int bst_iterator_next(struct bst_iterator* iter, void** value) {
   struct bst_node* curr = NULL;
 
-  if(bst_iterator_has_next(iter) == 1){
+  if(bst_iterator_has_next(iter) == 0){
     return 0;
   }else{
     curr = stack_pop(iter->stack);
