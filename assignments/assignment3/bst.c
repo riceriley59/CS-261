@@ -372,10 +372,17 @@ struct bst_iterator {
  *   bst - the BST for over which to create an iterator.  May not be NULL.
  */
 struct bst_iterator* bst_iterator_create(struct bst* bst) {
-  /*
-   * FIXME:
-   */
-  return NULL;
+  struct bst_iterator* iterator = malloc(sizeof(struct bst_iterator));
+  iterator->stack = stack_create();
+
+  struct bst_node* curr = bst->root;
+
+  while(curr != NULL){
+    stack_push(iterator->stack, (void*)curr);
+    curr = curr->left;
+  }
+
+  return iterator;
 }
 
 /*
@@ -387,10 +394,10 @@ struct bst_iterator* bst_iterator_create(struct bst* bst) {
  *   iter - the BST iterator to be destroyed.  May not be NULL.
  */
 void bst_iterator_free(struct bst_iterator* iter) {
-  /*
-   * FIXME:
-   */
-  return;
+  stack_free(iter->stack);
+
+  free(iter);
+  iter = NULL;
 }
 
 /*
@@ -404,10 +411,7 @@ void bst_iterator_free(struct bst_iterator* iter) {
  *     not be NULL.
  */
 int bst_iterator_has_next(struct bst_iterator* iter) {
-  /*
-   * FIXME:
-   */
-  return 0;
+  return stack_isempty(iter->stack);
 }
 
 /*
@@ -436,11 +440,24 @@ int bst_iterator_has_next(struct bst_iterator* iter) {
  *   pointed to by `iter`.
  */
 int bst_iterator_next(struct bst_iterator* iter, void** value) {
-  /*
-   * FIXME:
-   */
-  if (value) {
-    *value = NULL;
+  struct bst_node* curr = NULL;
+
+  if(bst_iterator_has_next(iter) == 1){
+    return 0;
+  }else{
+    curr = stack_pop(iter->stack);
+
+    if(curr->right != NULL){
+      struct bst_node* temp = curr->right;
+
+      while(temp != NULL){
+        stack_push(iter->stack, temp);
+        temp = temp->left;
+      }
+    }
   }
-  return 0;
+
+  *value = curr->value;
+
+  return curr->key;
 }
