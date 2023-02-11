@@ -133,6 +133,7 @@ struct bst_node* insert_recursive(struct bst_node* root, struct bst_node* newnod
  */
 void bst_insert(struct bst* bst, int key, void* value) {
   struct bst_node* newnode = malloc(sizeof(struct bst_node));
+  
   newnode->key = key;
   newnode->value = value;
   newnode->right = NULL;
