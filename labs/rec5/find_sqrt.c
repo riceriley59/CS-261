@@ -5,20 +5,20 @@ int sqrt_func(int x)
 {
     int left = 0;
     int right = x;
-    long long int middle;
+    long long int middle = 0;
 
-    while(left < right){
-        middle = ((left + right) / 2) + 1;
+    while(left <= right){
+        middle = ((left + right) / 2);
         if(middle*middle == x){
             return middle;
         }else if(middle*middle < x){
-            left = middle;
+            left = middle + 1;
         }else{
             right = middle - 1;
         }
     }
 
-    return left;
+    return left - 1;
 }
 
 int main(int argc, char **argv)
@@ -32,8 +32,6 @@ int main(int argc, char **argv)
     printf("Square root of 123456789: \nExpected: 11111\tActual: %d\n", sqrt_func(123456789));
     printf("\nFor the example below, think of integer overflow: \n");
     printf("Square root of 2147395600: \nExpected: 46340\tActual: %d\n", sqrt_func(2147395600));
-
-
 
     return 0;
 }

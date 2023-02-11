@@ -1,3 +1,7 @@
 I struggled most on the midterm with finding the runtime based on the runtime complexity and the number of 
 elements; Although, I am starting to understand more how to solve them with cross multiplication. I also struggled
-with looking at a snippet of code and finding the best-case runtime complexity.  
+with looking at a snippet of code and finding the best-case runtime complexity. 
+
+I also struggled with finding the outcome of casting different pointers to different types and how that will affect
+data. Also I didn't know that when you label a char pointer as const if you change it then it will result in a compiling
+instead of a runtime error which would happen if you didn't specify the const keyword.
