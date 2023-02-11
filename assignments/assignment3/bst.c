@@ -411,7 +411,7 @@ void bst_iterator_free(struct bst_iterator* iter) {
  *     not be NULL.
  */
 int bst_iterator_has_next(struct bst_iterator* iter) {
-  return stack_isempty(iter->stack);
+  return !stack_isempty(iter->stack);
 }
 
 /*
