@@ -46,18 +46,4 @@ void bst_iterator_free(struct bst_iterator* iter);
 int bst_iterator_has_next(struct bst_iterator* iter);
 int bst_iterator_next(struct bst_iterator* iter, void** value);
 
-/*
- * Helper functions for recursion.
- */
-void free_tree(struct bst_node* root);
-int count_tree(struct bst_node* root);
-struct bst_node* insert_recursive(struct bst_node* root, struct bst_node* newnode);
-struct bst_node* next_inorder(struct bst_node* root);
-struct bst_node* remove_recurse(struct bst_node* root, int key);
-struct bst_node* bst_get_recursive(struct bst_node* root, int key);
-int bst_height_recurse(struct bst_node* root);
-int get_path_sum(struct bst_node* root, int sum);
-int get_range_sum(struct bst_node* root, int lower, int upper);
-
-
 #endif
