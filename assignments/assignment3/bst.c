@@ -359,16 +359,16 @@ int bst_height_recurse(struct bst_node* root){
     return 0; //since we are past a leaf node we return 0 so as this doesn't count as depth
   }else{
     //get the depth of the left subtree
-    int l = bst_height_recurse(root->left);
+    int left = bst_height_recurse(root->left);
 
     //get the depth of the right subtree
-    int r = bst_height_recurse(root->right);
+    int right = bst_height_recurse(root->right);
 
     //if the left subtree is deeper then return that depth plus one for the root
-    if(l > r){
-      return (l + 1);
+    if(left > right){
+      return (left + 1);
     }else{ //otherwise return the depth of the right subtree plus one for the root
-      return (r + 1);
+      return (right + 1);
     }
   }
 
