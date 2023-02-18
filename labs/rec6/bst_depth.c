@@ -8,12 +8,15 @@ struct TreeNode {
 };
 
 int maxDepth(struct TreeNode* root){
+    //base case -- we hit a leaf node
     if(root == NULL){
         return -1;
     }else{
+        //recurse down right and left subtrees
         int left = maxDepth(root->left);
         int right = maxDepth(root->right);
 
+        //return the subtree with a larger depth plus one for the root node
         if(left > right){
             return (left + 1);
         }else{
@@ -23,12 +26,15 @@ int maxDepth(struct TreeNode* root){
 }
 
 int minDepth(struct TreeNode* root){
+    //base case -- we hit a leaf node
     if(root == NULL){
         return -1;
     }else{
+        //recurse down right and left subtrees
         int left = minDepth(root->left);
         int right = minDepth(root->right);
 
+        //if the node has children recurse down
         if(root->left == NULL){
             return (right + 1);
         }  
@@ -36,6 +42,7 @@ int minDepth(struct TreeNode* root){
             return (left + 1);
         }
 
+        //return the subtree with the smallest depth plus one for the root node
         if(left < right){
             return (left + 1);
         }else{
