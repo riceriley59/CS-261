@@ -139,8 +139,5 @@ int main(void)
     free(node7);
     free(node8);
 
-
-
-
     return 0;
 }
