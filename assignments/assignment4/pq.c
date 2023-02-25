@@ -4,8 +4,8 @@
  * you need in this file to implement a priority queue.  Make sure to add your
  * name and @oregonstate.edu email address below:
  *
- * Name:
- * Email:
+ * Name: Riley Rice
+ * Email: riceri@oregonstate.edu
  */
 
 #include <stdlib.h>
@@ -51,6 +51,8 @@ void pq_free(struct pq* pq) {
 	for(int i = 0; i < dynarray_size(pq->da); i++){
 		struct pq_node* freeNode = dynarray_get(pq->da, i);
 
+		free(freeNode->data);
+		free(freeNode->priority);
 		free(freeNode);
 		freeNode = NULL;
 	}
@@ -203,7 +205,6 @@ void* pq_remove_first(struct pq* pq) {
 	void* first = pq_first(pq);
 
 	dynarray_set(pq->da, 0, dynarray_get(pq->da, dynarray_size(pq->da) - 1));
-	free(dynarray_get(pq->da, dynarray_size(pq->da) - 1));
 
 	dynarray_remove(pq->da, dynarray_size(pq->da) - 1);
 
