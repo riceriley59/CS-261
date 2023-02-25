@@ -80,15 +80,12 @@ int pq_isempty(struct pq* pq) {
 void percolate_up(struct dynarray* da, int i){
 	int parent = (i - 1) / 2;
 
-	void* current;
-	void* currenti;
-
 	while(parent >= 0 && (((struct pq_node*)dynarray_get(da, parent))->priority > ((struct pq_node*)dynarray_get(da, i))->priority)){
-		current = dynarray_get(da, parent);
-		currenti = dynarray_get(da, i);
+		void* parentN = dynarray_get(da, parent);
+		void* iN = dynarray_get(da, i);
 
-		dynarray_set(da, i, current);
-		dynarray_set(da, parent, currenti);
+		dynarray_set(da, i, parentN);
+		dynarray_set(da, parent, iN);
 
 		i = parent;
 		parent = (i - 1) / 2;
@@ -174,15 +171,12 @@ void percolate_down(struct dynarray* da, int i){
 
 		if(min == -1) break;
 
-		int minP = ((struct pq_node*)dynarray_get(da, min))->priority;
-		int iP = ((struct pq_node*)dynarray_get(da, i))->priority;
-
-		struct pq_node* temp = dynarray_get(da, min);
+		struct pq_node* minN = dynarray_get(da, min);
 		struct pq_node* iN = dynarray_get(da, i);
 
-		if(minP < iP){
+		if(minN->priority < iN->priority){
 			dynarray_set(da, min, iN);
-			dynarray_set(da, i, temp);
+			dynarray_set(da, i, minN);
 
 			i = min;
 		}else break;
