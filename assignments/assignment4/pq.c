@@ -48,6 +48,10 @@ struct pq* pq_create() {
  *   pq - the priority queue to be destroyed.  May not be NULL.
  */
 void pq_free(struct pq* pq) {
+	for(int i = 0; i < dynarray_size(pq->da); i++){
+		free(dynarray_get(pq->da, i));
+	}
+
 	dynarray_free(pq->da);
 	pq->da = NULL;
 
@@ -70,8 +74,25 @@ void pq_free(struct pq* pq) {
  *   Should return 1 if pq is empty and 0 otherwise.
  */
 int pq_isempty(struct pq* pq) {
-	if(dynarray_size(pq->da) == 0) return 1;
-	else return 0;
+	return !dynarray_size(pq->da);
+}
+
+void percolate_up(struct dynarray* da, int i){
+	int parent = (i - 1) / 2;
+
+	void* current;
+	void* currenti;
+
+	while(parent >= 0 && (((struct pq_node*)dynarray_get(da, parent))->priority > ((struct pq_node*)dynarray_get(da, i))->priority)){
+		current = dynarray_get(da, parent);
+		currenti = dynarray_get(da, i);
+
+		dynarray_set(da, i, current);
+		dynarray_set(da, parent, currenti);
+
+		i = parent;
+		parent = (i - 1) / 2;
+	}
 }
 
 /*
@@ -96,22 +117,9 @@ void pq_insert(struct pq* pq, void* value, int priority) {
 	newnode->data = value;
 	newnode->priority = priority;
 
-	dynarray_insert(pq->da, (void*)newnode);
-	int i = dynarray_size(pq->da) - 1;
+	dynarray_insert(pq->da, newnode);
 
-	while(i > 0){
-		struct pq_node* root = dynarray_get(pq->da, i); 
-		struct pq_node* parent = dynarray_get(pq->da, (i - 1) / 2);
-
-		if(parent->priority > root->priority){
-			dynarray_set(pq->da, i, parent);
-			dynarray_set(pq->da, (i - 1) / 2, root);
-		}else break;
-		
-		i--;
-	}
-
-	return;
+	percolate_up(pq->da, (dynarray_size(pq->da) - 1));
 }
 
 
@@ -128,9 +136,7 @@ void pq_insert(struct pq* pq, void* value, int priority) {
  *   LOWEST priority value.
  */
 void* pq_first(struct pq* pq) {
-	struct pq_node* first = dynarray_get(pq->da, 0);
-
-	return first->data;
+	return ((struct pq_node*)dynarray_get(pq->da, 0))->data;
 }
 
 
@@ -147,22 +153,39 @@ void* pq_first(struct pq* pq) {
  *   with LOWEST priority value.
  */
 int pq_first_priority(struct pq* pq) {
-	struct pq_node* first = dynarray_get(pq->da, 0);
-
-	return first->priority;
+	return ((struct pq_node*)dynarray_get(pq->da, 0))->priority;
 }
 
-struct pq_node* min(struct pq_node* one, struct pq_node* two){
-	if(one->priority < two->priority){
-		if(one == NULL){
-			return two;
-		}
-		return one;
+int min_child(struct dynarray* da, int i){
+	if(((i * 2) + 2) > dynarray_size(da) - 1){
+		return -1;
+	}
+
+	if(((struct pq_node*)dynarray_get(da, (i * 2) + 1))->priority > ((struct pq_node*)dynarray_get(da, (i * 2) + 2))->priority){
+		return (i * 2) + 2;
 	}else{
-		if(two == NULL){
-			return one;
-		}
-		return two;
+		return (i * 2) + 1;
+	}
+}
+
+void percolate_down(struct dynarray* da, int i){
+	while(1){
+		int min = min_child(da, i);
+
+		if(min == -1) break;
+
+		int minP = ((struct pq_node*)dynarray_get(da, min))->priority;
+		int iP = ((struct pq_node*)dynarray_get(da, i))->priority;
+
+		struct pq_node* temp = dynarray_get(da, min);
+		struct pq_node* iN = dynarray_get(da, i);
+
+		if(minP < iP){
+			dynarray_set(da, min, iN);
+			dynarray_set(da, i, temp);
+
+			i = min;
+		}else break;
 	}
 }
 
@@ -180,39 +203,12 @@ struct pq_node* min(struct pq_node* one, struct pq_node* two){
  *   LOWEST priority value.
  */
 void* pq_remove_first(struct pq* pq) {
-	if(pq_isempty(pq)) return NULL;
+	void* first = pq_first(pq);
 
-	struct pq_node* first = dynarray_get(pq->da, 0);
+	dynarray_set(pq->da, 0, dynarray_get(pq->da, dynarray_size(pq->da) - 1));
+	dynarray_remove(pq->da, dynarray_size(pq->da) - 1);
 
-	dynarray_set(pq->da, 0, dynarray_get(pq->da, (dynarray_size(pq->da) - 1)));
-	dynarray_remove(pq->da, (dynarray_size(pq->da) - 1));
+	percolate_down(pq->da, 0);
 
-	if(!pq_isempty(pq)){
-		int i = 0;
-
-		while(i < (dynarray_size(pq->da) - 1)){
-			if((i * 2) + 2 < (dynarray_size(pq->da) - 1)){
-				struct pq_node* left = dynarray_get(pq->da, (i * 2) + 1);
-				struct pq_node* right = dynarray_get(pq->da, (i * 2) + 2);
-
-				struct pq_node* current = dynarray_get(pq->da, i);
-
-				if(current < min(left, right)){
-					if(left->priority < right->priority){
-						dynarray_set(pq->da, i, left);
-						dynarray_set(pq->da, (i * 2) + 1, current);
-
-						i = (i * 2) + 1;
-					}else{
-						dynarray_set(pq->da, i, right);
-						dynarray_set(pq->da, (i * 2) + 2, current);
-
-						i = (i * 2) + 2;
-					}
-				}else break;
-			}else break;
-		}
-	}
-	
-	return first->data;
+	return first;
 }
