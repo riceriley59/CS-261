@@ -49,7 +49,10 @@ struct pq* pq_create() {
  */
 void pq_free(struct pq* pq) {
 	for(int i = 0; i < dynarray_size(pq->da); i++){
-		free(dynarray_get(pq->da, i));
+		struct pq_node* freeNode = dynarray_get(pq->da, i);
+
+		free(freeNode);
+		freeNode = NULL;
 	}
 
 	dynarray_free(pq->da);
@@ -200,6 +203,8 @@ void* pq_remove_first(struct pq* pq) {
 	void* first = pq_first(pq);
 
 	dynarray_set(pq->da, 0, dynarray_get(pq->da, dynarray_size(pq->da) - 1));
+	free(dynarray_get(pq->da, dynarray_size(pq->da) - 1));
+
 	dynarray_remove(pq->da, dynarray_size(pq->da) - 1);
 
 	percolate_down(pq->da, 0);
