@@ -119,7 +119,6 @@ struct pq_node* createNode(int priority, void* val){
  */
 void pq_insert(struct pq* pq, void* value, int priority) {
 	dynarray_insert(pq->da, createNode(priority, value));
-
 	percolate_up(pq->da, (dynarray_size(pq->da) - 1));
 }
 
