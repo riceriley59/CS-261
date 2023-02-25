@@ -49,12 +49,7 @@ struct pq* pq_create() {
  */
 void pq_free(struct pq* pq) {
 	for(int i = 0; i < dynarray_size(pq->da); i++){
-		struct pq_node* freeNode = dynarray_get(pq->da, i);
-
-		free(freeNode->data);
-		free(freeNode->priority);
-		free(freeNode);
-		freeNode = NULL;
+		free(dynarray_get(pq->da, i));
 	}
 
 	dynarray_free(pq->da);
@@ -97,6 +92,14 @@ void percolate_up(struct dynarray* da, int i){
 	}
 }
 
+struct pq_node* createNode(int priority, void* val){
+	struct pq_node* newnode = malloc(sizeof(struct pq_node));
+	newnode->data = val;
+	newnode->priority = priority;
+
+	return newnode;
+}
+
 /*
  * This function should insert a given element into a priority queue with a
  * specified priority value.  Note that in this implementation, LOWER priority
@@ -115,11 +118,7 @@ void percolate_up(struct dynarray* da, int i){
  *     be the FIRST one returned.
  */
 void pq_insert(struct pq* pq, void* value, int priority) {
-	struct pq_node* newnode = malloc(sizeof(struct pq_node));
-	newnode->data = value;
-	newnode->priority = priority;
-
-	dynarray_insert(pq->da, newnode);
+	dynarray_insert(pq->da, createNode(priority, value));
 
 	percolate_up(pq->da, (dynarray_size(pq->da) - 1));
 }
@@ -203,9 +202,9 @@ void percolate_down(struct dynarray* da, int i){
  */
 void* pq_remove_first(struct pq* pq) {
 	void* first = pq_first(pq);
+	free(dynarray_get(pq->da, 0));
 
 	dynarray_set(pq->da, 0, dynarray_get(pq->da, dynarray_size(pq->da) - 1));
-
 	dynarray_remove(pq->da, dynarray_size(pq->da) - 1);
 
 	percolate_down(pq->da, 0);
