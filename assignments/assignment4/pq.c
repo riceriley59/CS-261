@@ -18,19 +18,24 @@
  * this struct to contain the data needed to implement a priority queue.
  */
 struct pq {
-	
+	struct dynarray* da;
 };
 
+struct pq_node{
+	int priority;
+	void* data;
+};
 
 /*
  * This function should allocate and initialize an empty priority queue and
  * return a pointer to it.
  */
 struct pq* pq_create() {
-	/*
-	 * FIXME: 
-	 */
-	return NULL;
+	struct pq* pq = malloc(sizeof(struct pq));
+	
+	pq->da = dynarray_create();
+
+	return pq;
 }
 
 
@@ -43,9 +48,12 @@ struct pq* pq_create() {
  *   pq - the priority queue to be destroyed.  May not be NULL.
  */
 void pq_free(struct pq* pq) {
-	/*
-	 * FIXME: 
-	 */
+	dynarray_free(pq->da);
+	pq->da = NULL;
+
+	free(pq);
+	pq = NULL;
+
 	return;
 }
 
@@ -62,12 +70,19 @@ void pq_free(struct pq* pq) {
  *   Should return 1 if pq is empty and 0 otherwise.
  */
 int pq_isempty(struct pq* pq) {
-	/*
-	 * FIXME: 
-	 */
-	return 1;
+	if(dynarray_size(pq->da) == 0) return 1;
+	else return 0;
 }
 
+void swap(struct pq_node* one, struct pq_node* two){
+	struct pq_node* temp = one;
+
+	one->priority = two->priority;
+	one->data = two->data;
+
+	two->priority = temp->priority;
+	two->data = temp->data;
+}
 
 /*
  * This function should insert a given element into a priority queue with a
@@ -87,9 +102,23 @@ int pq_isempty(struct pq* pq) {
  *     be the FIRST one returned.
  */
 void pq_insert(struct pq* pq, void* value, int priority) {
-	/*
-	 * FIXME: 
-	 */
+	struct pq_node* newnode = malloc(sizeof(struct pq_node));
+	newnode->data = value;
+	newnode->priority = priority;
+
+	dynarray_insert(pq->da, (void*)newnode);
+	int i = dynarray_size(pq->da) - 1;
+
+	while(i > 0){
+		struct pq_node* root = dynarray_get(pq->da, i); 
+		struct pq_node* parent = dynarray_get(pq->da, (i - 1) / 2);
+
+		if(parent->priority > root->priority) swap(root, parent);
+		else break;
+		
+		i--;
+	}
+
 	return;
 }
 
@@ -107,10 +136,9 @@ void pq_insert(struct pq* pq, void* value, int priority) {
  *   LOWEST priority value.
  */
 void* pq_first(struct pq* pq) {
-	/*
-	 * FIXME: 
-	 */
-	return NULL;
+	struct pq_node* first = dynarray_get(pq->da, 0);
+
+	return first->data;
 }
 
 
@@ -127,10 +155,9 @@ void* pq_first(struct pq* pq) {
  *   with LOWEST priority value.
  */
 int pq_first_priority(struct pq* pq) {
-	/*
-	 * FIXME: 
-	 */
-	return 0;
+	struct pq_node* first = dynarray_get(pq->da, 0);
+
+	return first->priority;
 }
 
 
@@ -148,8 +175,5 @@ int pq_first_priority(struct pq* pq) {
  *   LOWEST priority value.
  */
 void* pq_remove_first(struct pq* pq) {
-	/*
-	 * FIXME: 
-	 */
 	return NULL;
 }
