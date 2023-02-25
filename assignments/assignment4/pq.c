@@ -74,16 +74,6 @@ int pq_isempty(struct pq* pq) {
 	else return 0;
 }
 
-void swap(struct pq_node* one, struct pq_node* two){
-	struct pq_node* temp = one;
-
-	one->priority = two->priority;
-	one->data = two->data;
-
-	two->priority = temp->priority;
-	two->data = temp->data;
-}
-
 /*
  * This function should insert a given element into a priority queue with a
  * specified priority value.  Note that in this implementation, LOWER priority
@@ -113,8 +103,10 @@ void pq_insert(struct pq* pq, void* value, int priority) {
 		struct pq_node* root = dynarray_get(pq->da, i); 
 		struct pq_node* parent = dynarray_get(pq->da, (i - 1) / 2);
 
-		if(parent->priority > root->priority) swap(root, parent);
-		else break;
+		if(parent->priority > root->priority){
+			dynarray_set(pq->da, i, parent);
+			dynarray_set(pq->da, (i - 1) / 2, root);
+		}else break;
 		
 		i--;
 	}
@@ -160,6 +152,19 @@ int pq_first_priority(struct pq* pq) {
 	return first->priority;
 }
 
+struct pq_node* min(struct pq_node* one, struct pq_node* two){
+	if(one->priority < two->priority){
+		if(one == NULL){
+			return two;
+		}
+		return one;
+	}else{
+		if(two == NULL){
+			return one;
+		}
+		return two;
+	}
+}
 
 /*
  * This function should return the value of the first item in a priority
@@ -175,5 +180,39 @@ int pq_first_priority(struct pq* pq) {
  *   LOWEST priority value.
  */
 void* pq_remove_first(struct pq* pq) {
-	return NULL;
+	if(pq_isempty(pq)) return NULL;
+
+	struct pq_node* first = dynarray_get(pq->da, 0);
+
+	dynarray_set(pq->da, 0, dynarray_get(pq->da, (dynarray_size(pq->da) - 1)));
+	dynarray_remove(pq->da, (dynarray_size(pq->da) - 1));
+
+	if(!pq_isempty(pq)){
+		int i = 0;
+
+		while(i < (dynarray_size(pq->da) - 1)){
+			if((i * 2) + 2 < (dynarray_size(pq->da) - 1)){
+				struct pq_node* left = dynarray_get(pq->da, (i * 2) + 1);
+				struct pq_node* right = dynarray_get(pq->da, (i * 2) + 2);
+
+				struct pq_node* current = dynarray_get(pq->da, i);
+
+				if(current < min(left, right)){
+					if(left->priority < right->priority){
+						dynarray_set(pq->da, i, left);
+						dynarray_set(pq->da, (i * 2) + 1, current);
+
+						i = (i * 2) + 1;
+					}else{
+						dynarray_set(pq->da, i, right);
+						dynarray_set(pq->da, (i * 2) + 2, current);
+
+						i = (i * 2) + 2;
+					}
+				}else break;
+			}else break;
+		}
+	}
+	
+	return first->data;
 }
