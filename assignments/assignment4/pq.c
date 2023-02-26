@@ -48,8 +48,11 @@ struct pq* pq_create() {
  *   pq - the priority queue to be destroyed.  May not be NULL.
  */
 void pq_free(struct pq* pq) {
-	for(int i = 0; i < dynarray_size(pq->da); i++){
+	int i = 0;
+
+	while(!pq_isempty(pq)){
 		free(dynarray_get(pq->da, i));
+		i++;
 	}
 
 	dynarray_free(pq->da);

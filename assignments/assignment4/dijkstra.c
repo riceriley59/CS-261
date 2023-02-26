@@ -14,6 +14,7 @@
 
 #define DATA_FILE "airports.dat"
 #define START_NODE 0
+#define INF 999
 
 int main(int argc, char const *argv[]) {
 	/*
@@ -21,12 +22,12 @@ int main(int argc, char const *argv[]) {
 	 */
 	int n_nodes, n_edges;
 	FILE* file = fopen(DATA_FILE, "r");
-	fscanf(file, " %d %d ", &n_nodes, &n_edges);
+	fscanf(file, "%d %d", &n_nodes, &n_edges);
 
-	int adjacency[n_nodes][n_nodes];
+	int adjacency[10][10];
 
 	for(int i = 0; i < n_nodes; i++){
-		for(int j = 0; i < n_nodes; j++){
+		for(int j = 0; j < n_nodes; j++){
 			adjacency[i][j] = 0;
 		}
 	}
@@ -34,10 +35,19 @@ int main(int argc, char const *argv[]) {
 	for(int i = 0; i < n_edges; i++){
 		int source, dest, weight;
 
-		fscanf(file, " %d %d %d", &source, &dest, &weight);
+		fscanf(file, "%d %d %d", &source, &dest, &weight);
 
 		adjacency[source][dest] = weight;
 	}
+
+/* 	for(int i = 0; i < 10; i++){
+		for(int j = 0; j < 10; j++){
+			printf("%d  ", adjacency[i][j]);
+		}
+		printf("\n");
+	} */
+
+	
 
 	fclose(file);
 
