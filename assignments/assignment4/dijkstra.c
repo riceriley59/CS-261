@@ -30,11 +30,11 @@ void dijkstra(int start, int adj[][10]){
 		prev[i] = -1;
 	}
 
-	struct dijNode first;
-	first.current = start;
-	first.prev = prev[start];
+	struct dijNode* first = malloc(sizeof(struct dijNode));
+	first->current = start;
+	first->prev = prev[start];
 
-	pq_insert(pq, (void*)&first, 0);
+	pq_insert(pq, (void*)first, 0);
 
 	while(!pq_isempty(pq)){
 		int c = pq_first_priority(pq);
@@ -49,14 +49,16 @@ void dijkstra(int start, int adj[][10]){
 				if(adj[popped->current][i] > 0){
 					int neighborCost = adj[popped->current][i];
 
-					struct dijNode new;
-					new.current = i;
-					new.prev = popped->current;
+					struct dijNode* new = malloc(sizeof(struct dijNode));
+					new->current = i;
+					new->prev = popped->current;
 
-					pq_insert(pq, (void*)&new, (neighborCost + c));
+					pq_insert(pq, (void*)new, (neighborCost + c));
 				}
 			}
 		}
+
+		free(popped);
 	}
 
 	for(int i = 0; i < 10; i++){
