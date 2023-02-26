@@ -49,10 +49,11 @@ void dijkstra(int start, int adj[][10]){
 				if(adj[popped->current][i] > 0){
 					int neighborCost = adj[popped->current][i];
 
-					first.current = i;
-					first.prev = popped->current;
+					struct dijNode new;
+					new.current = i;
+					new.prev = popped->current;
 
-					pq_insert(pq, (void*)&first, (neighborCost + c));
+					pq_insert(pq, (void*)&new, (neighborCost + c));
 				}
 			}
 		}
@@ -87,6 +88,17 @@ int main(int argc, char const *argv[]) {
 		fscanf(file, "%d %d %d", &source, &dest, &weight);
 		adjacency[source][dest] = weight;
 	}
+
+	printf("Adjacency Matrix: \n");
+
+	for(int i = 0; i < 10; i++){
+		for(int j = 0; j < 10; j++){
+			printf("%d ", adjacency[i][j]);
+		}
+		printf("\n");
+	}
+
+	printf("\n\n");
 
 	dijkstra(START_NODE, adjacency);
 
