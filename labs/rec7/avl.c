@@ -309,11 +309,11 @@ struct avl_node* _avl_subtree_insert(struct avl_node* node, int key){
     }
     else {
         if (node->right == NULL) {
-                node->right = _avl_node_create(key);
+            node->right = _avl_node_create(key);
             node->right->parent = node;
         }
         else {
-                _avl_subtree_insert(node->right, key);
+            _avl_subtree_insert(node->right, key);
         }
     }
 
@@ -322,10 +322,7 @@ struct avl_node* _avl_subtree_insert(struct avl_node* node, int key){
         node = node->parent;
     }
 
-    if (node->parent == NULL) {
-        rebalance(node);
-    }
-    
+    rebalance(node);
     return node;
 }
 

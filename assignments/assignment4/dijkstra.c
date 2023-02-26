@@ -21,8 +21,7 @@ struct dijNode{
 	int prev;
 };
 
-void dijkstra(int start, int adj[][10], int size){
-	int cost[size], prev[size];
+void dijkstra(int start, int adj[][10], int size, int cost[], int prev[]){
 	struct pq* pq = pq_create();
 
 	for(int i = 0; i < size; i++){
@@ -57,27 +56,7 @@ void dijkstra(int start, int adj[][10], int size){
 				}
 			}
 		}
-
 		free(popped);
-	}
-
-	for(int i = 0; i < size; i++){
-		if(i != start){
-			printf("The path from %d to %d costs %d.", start, i, cost[i]);
-			
-			int k = i;
-
-			printf("\tThe path is: ");
-
-			while(k != start){
-				printf("%d<-", k);
-
-				k = prev[k];
-			}
-
-			printf("%d.", start);
-			printf("\n");
-		}
 	}
 
 	pq_free(pq);
@@ -116,8 +95,29 @@ int main(int argc, char const *argv[]) {
 	}
 
 	printf("\n\n");
+	printf("Paths from PDX to other locations:\n");
 
-	dijkstra(START_NODE, adjacency, n_nodes);
+	int cost[n_nodes], prev[n_nodes];
+	dijkstra(START_NODE, adjacency, n_nodes, cost, prev);
+
+	for(int i = 0; i < n_nodes; i++){
+		if(i != START_NODE){
+			printf("The path from %d to %d costs %d.", START_NODE, i, cost[i]);
+			
+			int k = i;
+
+			printf("\tThe path is: ");
+
+			while(k != START_NODE){
+				printf("%d<-", k);
+
+				k = prev[k];
+			}
+
+			printf("%d.", START_NODE);
+			printf("\n");
+		}
+	}
 
 	fclose(file);
  
