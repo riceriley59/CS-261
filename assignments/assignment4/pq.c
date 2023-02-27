@@ -107,7 +107,7 @@ void percolate_up(struct dynarray* da, int i){
 
 	//while the parent isn't higher than the root and the priority of the parent is greater than the priority of the current index
 	//the continue to swap the parent node and the current node thus percolating the node upwards.
-	while(parent >= 0 && (((struct pq_node*)dynarray_get(da, parent))->priority > ((struct pq_node*)dynarray_get(da, i))->priority)){
+	if(parent >= 0 && (((struct pq_node*)dynarray_get(da, parent))->priority > ((struct pq_node*)dynarray_get(da, i))->priority)){
 		//get the node at the parent index and current index
 		void* parentN = dynarray_get(da, parent);
 		void* iN = dynarray_get(da, i);
@@ -118,9 +118,8 @@ void percolate_up(struct dynarray* da, int i){
 
 		//update the current index to the parent and then find the parent of the 
 		//new current index and set that to parent for the next iteration of the loop.
-		i = parent;
-		parent = (i - 1) / 2;
-	}
+		percolate_up(da, parent);
+	}else return;
 }
 
 /*
@@ -246,30 +245,27 @@ int min_child(struct dynarray* da, int i){
  * 	 i - the index that we want percolate down from.
  */
 void percolate_down(struct dynarray* da, int i){
-	//loop until we break
-	while(1){
-		//get the index for the minimum child of the current index
-		int min = min_child(da, i);
+	//get the index for the minimum child of the current index
+	int min = min_child(da, i);
 
-		//if the index is out of bounds then break
-		if(min == -1) break;
+	//if the index is out of bounds then break
+	if(min == -1) return;
 
-		//get the nodes at the current index and minimum child's index
-		struct pq_node* minN = dynarray_get(da, min);
-		struct pq_node* iN = dynarray_get(da, i);
+	//get the nodes at the current index and minimum child's index
+	struct pq_node* minN = dynarray_get(da, min);
+	struct pq_node* iN = dynarray_get(da, i);
 
-		//if the priority of the minimum child is less than the root's priority 
-		//then swap nodes and loop again otherwise break
-		if(minN->priority < iN->priority){
-			//swap nodes
-			dynarray_set(da, min, iN);
-			dynarray_set(da, i, minN);
+	//if the priority of the minimum child is less than the root's priority 
+	//then swap nodes and loop again otherwise break
+	if(minN->priority < iN->priority){
+		//swap nodes
+		dynarray_set(da, min, iN);
+		dynarray_set(da, i, minN);
 
-			//set i to current min so that next iteration we can find the next
-			//min child one depth down
-			i = min;
-		}else break;
-	}
+		//set i to current min so that next iteration we can find the next
+		//min child one depth down
+		percolate_down(da, min);
+	}else return;
 }
 
 /*
