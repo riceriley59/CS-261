@@ -19,9 +19,9 @@
 struct dijNode{
 	int current;
 	int prev;
-};
-
-void dijkstra(int start, int adj[][10], int size, int cost[], int prev[]){
+}; 
+ 
+void dijkstra (int start, int adj[][10], int size, int cost[], int prev[]){
 	struct pq* pq = pq_create();
 
 	for(int i = 0; i < size; i++){
@@ -70,7 +70,7 @@ int main(int argc, char const *argv[]) {
 	FILE* file = fopen(DATA_FILE, "r");
 	fscanf(file, "%d %d", &n_nodes, &n_edges);
 
-	int adjacency[10][10];
+	int adjacency[n_nodes][n_nodes];
 
 	for(int i = 0; i < n_nodes; i++){
 		for(int j = 0; j < n_nodes; j++){
