@@ -14,7 +14,7 @@
 
 #define DATA_FILE "airports.dat"
 #define START_NODE 0
-#define INF 999
+#define INF 9999
 
 struct dijNode{
 	int current;
