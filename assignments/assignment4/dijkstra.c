@@ -86,16 +86,28 @@ int main(int argc, char const *argv[]) {
 	}
 
 	printf("Adjacency Matrix: \n");
+	printf("------------------------------------------------------\n");
 
 	for(int i = 0; i < 10; i++){
+		printf("| ");
 		for(int j = 0; j < 10; j++){
 			printf("%d ", adjacency[i][j]);
+
+			if(adjacency[i][j] < 10){
+				printf("   ");
+			}else if(adjacency[i][j] < 100){
+				printf("  ");
+			}else{
+				printf(" ");
+			}
 		}
-		printf("\n");
+		printf(" |\n");
 	}
 
-	printf("\n\n");
+	printf("------------------------------------------------------\n\n\n");
+
 	printf("Paths from PDX to other locations:\n");
+	printf("-----------------------------------------------------\n");
 
 	int cost[n_nodes], prev[n_nodes];
 	dijkstra(START_NODE, adjacency, n_nodes, cost, prev);
@@ -118,7 +130,6 @@ int main(int argc, char const *argv[]) {
 			printf("\n");
 		}
 	}
-
 	fclose(file);
  
  	return 0;
