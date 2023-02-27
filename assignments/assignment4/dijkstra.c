@@ -137,9 +137,9 @@ int main(int argc, char const *argv[]) {
 	printf("------------------------------------------------------\n");
 
 	//print out adjacency matrix with aligned columns
-	for(int i = 0; i < 10; i++){
+	for(int i = 0; i < n_nodes; i++){
 		printf("| ");
-		for(int j = 0; j < 10; j++){
+		for(int j = 0; j < n_nodes; j++){
 			printf("%d ", adjacency[i][j]);
 
 			if(adjacency[i][j] < 10){
