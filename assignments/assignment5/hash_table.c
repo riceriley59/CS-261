@@ -4,8 +4,8 @@
  * you need in this file to implement a hash table.  Make sure to add your
  * name and @oregonstate.edu email address below:
  *
- * Name:
- * Email:
+ * Name: Riley Rice
+ * Email: riceri@oregonstate.edu
  */
 
 #include <stdlib.h>
@@ -19,7 +19,10 @@
  * This is the structure that represents a hash table.  You must define
  * this struct to contain the data needed to implement a hash table.
  */
-struct ht;
+struct ht{
+    struct dynarray* da;
+    struct list* list;
+};
 
 
 /*
@@ -27,10 +30,12 @@ struct ht;
  * return a pointer to it.
  */
 struct ht* ht_create(){
-    /*
-     * FIXME: 
-     */
-    return NULL;
+    struct ht* ht = malloc(sizeof(struct ht));
+
+    ht->da = dynarray_create();
+    ht->list = list_create();
+
+    return ht;
 }
 
 /*
@@ -42,9 +47,15 @@ struct ht* ht_create(){
  *   ht - the hash table to be destroyed.  May not be NULL.
  */
 void ht_free(struct ht* ht){
-    /*
-     * FIXME: 
-     */
+    dynarray_free(ht->da);
+    ht->da = NULL;
+
+    list_free(ht->list);
+    ht->list = NULL;
+
+    free(ht);
+    ht = NULL;
+
     return;
 }
 
@@ -60,10 +71,11 @@ void ht_free(struct ht* ht){
  *   Should return 1 if ht is empty and 0 otherwise.
  */
 int ht_isempty(struct ht* ht){
-    /*
-     * FIXME: 
-     */
-    return -1;
+    for(int i = 0; i < dynarray_size(ht->da); i++){
+        if(dynarray_get(ht->da, i) != NULL) return 0;
+    }
+
+    return 1;
 }
 
 
@@ -72,10 +84,13 @@ int ht_isempty(struct ht* ht){
  * elements stored in it, not the capacity).
  */
 int ht_size(struct ht* ht){
-    /*
-     * FIXME: 
-     */
-    return -1;
+    int size = 0;
+
+    for(int i = 0; i < dynarray_size(ht->da); i++){
+        if(dynarray_get(ht->da, i) != NULL) size++;
+    }
+
+    return size;
 }
 
 
