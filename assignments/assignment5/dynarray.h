@@ -28,5 +28,6 @@ void dynarray_set(struct dynarray* da, int idx, void* val);
 void _dynarray_resize(struct dynarray* da, int capacity);
 
 int dynarray_capacity(struct dynarray* da);
+void** get_data(struct dynarray* da);
 
 #endif

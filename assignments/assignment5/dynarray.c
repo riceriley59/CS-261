@@ -92,6 +92,10 @@ void _dynarray_resize(struct dynarray* da, int new_capacity) {
   da->size = 0;
 }
 
+void** get_data(struct dynarray* da){
+  return da->data;
+}
+
 /*
  * This function inserts a new value to a given dynamic array.  The new element
  * is always inserted at the *end* of the array.
