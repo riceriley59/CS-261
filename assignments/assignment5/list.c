@@ -27,6 +27,36 @@ struct list {
   int size;
 };
 
+struct list_iterator{
+  struct list* list;
+  struct node* curr;
+};
+
+struct list_iterator* list_iterator_create(struct list* list){
+  struct list_iterator* it = malloc(sizeof(struct list_iterator*));
+
+  it->list = list;
+  it->curr = list->head;
+
+  return it;
+}
+
+void* list_iterator_next(struct list_iterator* it){
+  void* data = NULL;
+
+  if(it->curr){
+    data = it->curr->val;
+
+    it->curr = it->curr->next;
+  }
+
+  return data;
+}
+
+int list_iterator_has_next(struct list_iterator* it){
+  return it->curr != NULL;
+}
+
 /*
  * This function allocates and initializes a new, empty linked list and
  * returns a pointer to it.
@@ -232,4 +262,30 @@ void* list_remove_first(struct list* list){
   list->size--;
 
   return data;
+}
+
+void list_remove_index(struct list* list, int index){
+  if(index == 0){
+    void* dummy = list_remove_first(list);
+    return;
+  }
+
+  struct node* curr = list->head;
+  struct node* prev = NULL;
+
+  int i = 0;
+
+  while(i != index){
+    prev = curr;
+    curr = curr->next;
+
+    i++;
+  }
+
+  prev->next = curr->next;
+
+  free(curr);
+  curr = NULL;
+
+  list->size--;
 }

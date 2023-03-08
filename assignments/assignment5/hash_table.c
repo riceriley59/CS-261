@@ -151,6 +151,8 @@ void rehash(struct ht* ht, int (*convert)(void*)){
 
             data = list_remove_first((struct list*)old_da[i]);
         }
+
+        list_free((struct list*)old_da[i]);
     }
 
     free(old_da);
@@ -208,9 +210,21 @@ void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
  *     to convert it to a unique integer hashcode
  */
 void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
-    /*
-     * FIXME: 
-     */
+    int index = ht_hash_func(ht, key, convert);
+    struct list* bucket = dynarray_get(ht->da, index);
+
+    struct list_iterator* it = list_iterator_create(bucket);
+
+    while(list_iterator_has_next(it)){
+        struct ht_node* curr = list_iterator_next(it);
+
+        if(curr->key == key){
+            return curr->value;
+        }
+    }
+
+    free(it);
+
     return NULL;
 }
 
@@ -229,8 +243,24 @@ void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
  *     to convert it to a unique integer hashcode
  */
 void ht_remove(struct ht* ht, void* key, int (*convert)(void*)){
-    /*
-     * FIXME: 
-     */
+    int index = ht_hash_func(ht, key, convert);
+    struct list* bucket = dynarray_get(ht->da, index);
+
+    struct list_iterator* it = list_iterator_create(bucket);
+
+    int i = 0;
+
+    while(list_iterator_has_next(it)){
+        struct ht_node* curr = list_iterator_next(it);
+
+        if(curr->key == key){
+            list_remove_index(bucket, i);
+            return;
+        }
+
+        i++;
+    }
+
+    free(it);
     return;
 } 

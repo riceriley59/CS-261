@@ -16,6 +16,8 @@
  */
 struct list;
 
+struct list_iterator;
+
 /*
  * Linked list interface function prototypes.  Refer to list.c for
  * documentation about each of these functions.
@@ -30,5 +32,10 @@ void list_reverse(struct list* list);
 int list_size(struct list* list);
 void* list_get_first(struct list* list);
 void* list_remove_first(struct list* list);
+void list_remove_index(struct list* list, int index);
+
+struct list_iterator* list_iterator_create(struct list* list);
+void* list_iterator_next(struct list_iterator* it);
+int list_iterator_has_next(struct list_iterator* it);
 
 #endif
