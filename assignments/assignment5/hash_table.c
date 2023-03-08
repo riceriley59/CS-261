@@ -128,6 +128,19 @@ int ht_hash_func(struct ht* ht, void* key, int (*convert)(void*)){
     return hash % dynarray_capacity(ht->da);
 }
 
+int get_load_factor(struct ht* ht){
+    return ht_size(ht) / dynarray_capacity(ht->da);
+}
+
+void rehash(struct ht* ht){
+    struct dynarray* old_da = ht->da;
+
+    _dynarray_resize(ht->da, dynarray_capacity(ht->da) * 2);
+
+    for(int i = 0; i < dynarray_capacity(ht->da); i++){
+        dynarray_insert(ht->da, (void*)list_create());
+    }
+}
 
 /*
  * This function should insert a given element into a hash table with a
@@ -156,6 +169,10 @@ void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
     newNode->value = value;
 
     list_insert(dynarray_get(ht->da, index), newNode);
+
+    if(get_load_factor(ht) >= 4){
+        rehash(ht);
+    }
 
     return;
 }

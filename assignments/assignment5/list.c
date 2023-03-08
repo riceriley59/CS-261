@@ -127,6 +127,8 @@ void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b)) {
     prev = curr;
     curr = curr->next;
   }
+
+  list->size--;
 }
 
 /*

@@ -77,17 +77,16 @@ void _dynarray_resize(struct dynarray* da, int new_capacity) {
   void** new_data = malloc(new_capacity * sizeof(void*));
   assert(new_data);
 
-  /*
+ /*
    * Copy data from the old array to the new one.
-   */
   for (int i = 0; i < da->size; i++) {
     new_data[i] = da->data[i];
-  }
+  } */
 
   /*
    * Put the new array into the dynarray struct.
    */
-  free(da->data);
+  //free(da->data);
   da->data = new_data;
   da->capacity = new_capacity;
 }
@@ -106,10 +105,10 @@ void dynarray_insert(struct dynarray* da, void* val) {
 
   /*
    * Make sure we have enough space for the new element.  Resize if needed.
-   */
+   
   if (da->size == da->capacity) {
     _dynarray_resize(da, 2 * da->capacity);
-  }
+  }*/
 
   /*
    * Put the new element at the end of the array.
