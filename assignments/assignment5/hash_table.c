@@ -115,17 +115,15 @@ int ht_size(struct ht* ht){
  */
 int ht_hash_func(struct ht* ht, void* key, int (*convert)(void*)){
     int keyint = convert(key);
-    int hash = 0;
-    int remainder = 0;
-
-    while(keyint != 0){
-        remainder = keyint % 10;
-        keyint /= 10;
-
-        hash += (remainder * 10);
-    }
     
-    return hash % dynarray_capacity(ht->da);
+    int c2=0x27d4eb2d; // a prime or an odd constant
+    keyint = (keyint ^ 61) ^ (keyint >> 16);
+    keyint = keyint + (keyint << 3);
+    keyint = keyint ^ (keyint >> 4);
+    keyint = keyint * c2;
+    keyint = keyint ^ (keyint >> 15);
+    
+    return keyint % dynarray_capacity(ht->da);
 }
 
 int get_load_factor(struct ht* ht){
