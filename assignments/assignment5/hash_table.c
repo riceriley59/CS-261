@@ -116,7 +116,8 @@ int ht_size(struct ht* ht){
 int ht_hash_func(struct ht* ht, void* key, int (*convert)(void*)){
     int keyint = convert(key);
     
-    int c2=0x27d4eb2d; // a prime or an odd constant
+    int c2 = 0x27d4eb2d; // a prime or an odd constant
+
     keyint = (keyint ^ 61) ^ (keyint >> 16);
     keyint = keyint + (keyint << 3);
     keyint = keyint ^ (keyint >> 4);
@@ -178,6 +179,10 @@ void rehash(struct ht* ht, int (*convert)(void*)){
 
 void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
     if(ht_lookup(ht, key, convert) == NULL){
+        if(get_load_factor(ht) >= 4){
+            rehash(ht, convert);
+        }
+
         int index = ht_hash_func(ht, key, convert);
 
         struct ht_node* newNode = malloc(sizeof(struct ht_node));
@@ -185,10 +190,6 @@ void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
         newNode->value = value;
 
         list_insert(dynarray_get(ht->da, index), newNode);
-
-        if(get_load_factor(ht) >= 4){
-            rehash(ht, convert);
-        }
 
     }else{
         int index = ht_hash_func(ht, key, convert);
