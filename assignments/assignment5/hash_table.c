@@ -179,16 +179,43 @@ void rehash(struct ht* ht, int (*convert)(void*)){
  */
 
 void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
-    int index = ht_hash_func(ht, key, convert);
+    if(ht_lookup(ht, key, convert) == NULL){
+        int index = ht_hash_func(ht, key, convert);
 
-    struct ht_node* newNode = malloc(sizeof(struct ht_node));
-    newNode->key = key;
-    newNode->value = value;
+        struct ht_node* newNode = malloc(sizeof(struct ht_node));
+        newNode->key = key;
+        newNode->value = value;
 
-    list_insert(dynarray_get(ht->da, index), newNode);
+        list_insert(dynarray_get(ht->da, index), newNode);
 
-    if(get_load_factor(ht) >= 4){
-        rehash(ht, convert);
+        if(get_load_factor(ht) >= 4){
+            rehash(ht, convert);
+        }
+
+    }else{
+        int index = ht_hash_func(ht, key, convert);
+        struct list* bucket = dynarray_get(ht->da, index);
+
+        struct list_iterator* it = list_iterator_create(bucket);
+
+        int i = 0;
+
+        while(list_iterator_has_next(it)){
+            struct ht_node* curr = list_iterator_next(it);
+
+            if(curr->key == key){
+                struct ht_node* newNode = malloc(sizeof(struct ht_node));
+                newNode->key = curr->key;
+                newNode->value = value;
+
+                list_replace_index(bucket, i, (void*)newNode);
+                return;
+            }
+
+            i++;
+        }
+
+        free(it);
     }
 
     return;

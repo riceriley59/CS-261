@@ -289,3 +289,32 @@ void list_remove_index(struct list* list, int index){
 
   list->size--;
 }
+
+void list_replace_index(struct list* list, int index, void* value){
+  void* old_val = NULL;
+
+  if(index == 0){
+    old_val = list->head->val;
+
+    free(old_val);
+    old_val = NULL;
+
+    list->head->val = value;
+    return;
+  }
+
+  struct node* curr = list->head;
+
+  int i = 0;
+
+  while(i != index){
+    curr = curr->next;
+    i++;
+  }
+
+  old_val = curr->val;
+  curr->val = value;
+
+  free(old_val);
+  old_val = NULL;
+}

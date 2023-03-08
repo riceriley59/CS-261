@@ -33,6 +33,7 @@ int list_size(struct list* list);
 void* list_get_first(struct list* list);
 void* list_remove_first(struct list* list);
 void list_remove_index(struct list* list, int index);
+void list_replace_index(struct list* list, int index, void* value);
 
 struct list_iterator* list_iterator_create(struct list* list);
 void* list_iterator_next(struct list_iterator* it);
