@@ -134,6 +134,7 @@ int get_load_factor(struct ht* ht){
 
 void rehash(struct ht* ht, int (*convert)(void*)){
     void** old_da = get_data(ht->da);
+    int elements = dynarray_capacity(ht->da);
 
     _dynarray_resize(ht->da, dynarray_capacity(ht->da) * 2);
 
@@ -141,7 +142,7 @@ void rehash(struct ht* ht, int (*convert)(void*)){
         dynarray_insert(ht->da, (void*)list_create());
     }
 
-    for(int i = 0; i < dynarray_capacity(ht->da); i++){
+    for(int i = 0; i < elements; i++){
         struct ht_node* data = list_remove_first((struct list*)old_da[i]);
 
         while(data != NULL){
