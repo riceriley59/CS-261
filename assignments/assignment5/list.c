@@ -229,5 +229,7 @@ void* list_remove_first(struct list* list){
   free(oldhead);
   oldhead = NULL;
 
+  list->size--;
+
   return data;
 }
