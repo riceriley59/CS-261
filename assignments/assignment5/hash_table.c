@@ -13,6 +13,7 @@
 #include "dynarray.h"
 #include "list.h"
 #include "hash_table.h"
+#include <stdio.h>
 
 
 /*
@@ -21,7 +22,11 @@
  */
 struct ht{
     struct dynarray* da;
-    struct list* list;
+};
+
+struct ht_node{
+    void* key;
+    void* value;
 };
 
 
@@ -33,7 +38,10 @@ struct ht* ht_create(){
     struct ht* ht = malloc(sizeof(struct ht));
 
     ht->da = dynarray_create();
-    ht->list = list_create();
+
+    for(int i = 0; i < dynarray_capacity(ht->da); i++){
+        dynarray_insert(ht->da, (void*)list_create());
+    }
 
     return ht;
 }
@@ -47,11 +55,13 @@ struct ht* ht_create(){
  *   ht - the hash table to be destroyed.  May not be NULL.
  */
 void ht_free(struct ht* ht){
+    for(int i = 0; i < dynarray_capacity(ht->da); i++){
+        list_free((struct list*)dynarray_get(ht->da, i));
+        dynarray_set(ht->da, i, NULL);
+    }
+
     dynarray_free(ht->da);
     ht->da = NULL;
-
-    list_free(ht->list);
-    ht->list = NULL;
 
     free(ht);
     ht = NULL;
@@ -72,7 +82,7 @@ void ht_free(struct ht* ht){
  */
 int ht_isempty(struct ht* ht){
     for(int i = 0; i < dynarray_size(ht->da); i++){
-        if(dynarray_get(ht->da, i) != NULL) return 0;
+        if(list_size((struct list*)dynarray_get(ht->da, i)) != 0) return 0;
     }
 
     return 1;
@@ -87,7 +97,7 @@ int ht_size(struct ht* ht){
     int size = 0;
 
     for(int i = 0; i < dynarray_size(ht->da); i++){
-        if(dynarray_get(ht->da, i) != NULL) size++;
+        size += list_size((struct list*)dynarray_get(ht->da, i));
     }
 
     return size;
@@ -106,10 +116,18 @@ int ht_size(struct ht* ht){
  *     to convert it to a unique integer hashcode
  */
 int ht_hash_func(struct ht* ht, void* key, int (*convert)(void*)){
-    /*
-     * FIXME: 
-     */
-    return -1;
+    int keyint = convert(key);
+    int hash = 0;
+    int remainder = 0;
+
+    while(keyint != 0){
+        remainder = keyint % 10;
+        keyint /= 10;
+
+        hash += (remainder * 10);
+    }
+    
+    return hash % dynarray_capacity(ht->da);
 }
 
 
@@ -133,9 +151,42 @@ int ht_hash_func(struct ht* ht, void* key, int (*convert)(void*)){
  */
 
 void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
-    /*
-     * FIXME: 
-     */
+    int index = ht_hash_func(ht, key, convert);
+
+    struct ht_node* newNode = malloc(sizeof(struct ht_node));
+    newNode->key = key;
+    newNode->value = value;
+
+    list_insert((struct list*)dynarray_get(ht->da, index), (void*)newNode);
+
+    if(ht_size(ht) / dynarray_capacity(ht->da) >= 4){
+        struct dynarray* old_da = ht->da;
+        int elements = ht_size(ht);
+        int k = 0;
+
+        _dynarray_resize(ht->da, dynarray_capacity(ht->da) * 2);
+
+        for(int i = 0; i < dynarray_capacity(ht->da); i++){
+            dynarray_insert(ht->da, (void*)list_create());
+        }
+
+        struct list* currList = dynarray_get(old_da, k);
+
+        for(int i = 0; i < elements; i++){
+            struct ht_node* popped = list_remove_first(currList);
+            if(popped == NULL){
+                k++;
+                currList = dynarray_get(old_da, k);
+            }
+
+            int index = ht_hash_func(ht, popped->key, convert);
+            list_insert(dynarray_get(ht->da, index), (void*)popped);
+        }
+
+        free(old_da);
+        old_da = NULL;
+    }
+    
     return;
 }
 

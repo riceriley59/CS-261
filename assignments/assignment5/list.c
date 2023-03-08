@@ -24,7 +24,12 @@ struct node {
  */
 struct list {
   struct node* head;
+  int size;
 };
+
+int list_size(struct list* list){
+  return list->size;
+}
 
 /*
  * This function allocates and initializes a new, empty linked list and
@@ -33,6 +38,9 @@ struct list {
 struct list* list_create() {
   struct list* list = malloc(sizeof(struct list));
   list->head = NULL;
+
+  list->size = 0;
+
   return list;
 }
 
@@ -79,6 +87,8 @@ void list_insert(struct list* list, void* val) {
   temp->val = val;
   temp->next = list->head;
   list->head = temp;
+
+  list->size++;
 }
 
 /*
@@ -121,6 +131,8 @@ void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b)) {
     prev = curr;
     curr = curr->next;
   }
+
+  list->size--;
 }
 
 /*
@@ -198,4 +210,26 @@ void list_reverse(struct list* list) {
     list->head = prev = curr;
     curr = next;
   }
+}
+
+void* get_first(struct list* list){
+  return list->head->val;
+}
+
+void* list_remove_first(struct list* list){
+  if(list_size(list) == 0) return NULL;
+
+  void* value = get_first(list);
+
+  struct node* oldhead = list->head;
+  struct node* newhead = oldhead->next;
+
+  list->head = newhead;
+
+  free(oldhead);
+  oldhead = NULL;
+
+  list->size--;
+
+  return value;
 }
