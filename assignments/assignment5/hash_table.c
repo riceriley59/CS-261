@@ -4,8 +4,8 @@
  * you need in this file to implement a hash table.  Make sure to add your
  * name and @oregonstate.edu email address below:
  *
- * Name: Riley Rice
- * Email: riceri@oregonstate.edu
+ * Name:
+ * Email:
  */
 
 #include <stdlib.h>
@@ -13,7 +13,6 @@
 #include "dynarray.h"
 #include "list.h"
 #include "hash_table.h"
-#include <stdio.h>
 
 
 /*
@@ -38,7 +37,6 @@ struct ht* ht_create(){
     struct ht* ht = malloc(sizeof(struct ht));
 
     ht->da = dynarray_create();
-
     for(int i = 0; i < dynarray_capacity(ht->da); i++){
         dynarray_insert(ht->da, (void*)list_create());
     }
@@ -81,7 +79,7 @@ void ht_free(struct ht* ht){
  *   Should return 1 if ht is empty and 0 otherwise.
  */
 int ht_isempty(struct ht* ht){
-    for(int i = 0; i < dynarray_size(ht->da); i++){
+    for(int i = 0; i < dynarray_capacity(ht->da); i++){
         if(list_size((struct list*)dynarray_get(ht->da, i)) != 0) return 0;
     }
 
@@ -96,7 +94,7 @@ int ht_isempty(struct ht* ht){
 int ht_size(struct ht* ht){
     int size = 0;
 
-    for(int i = 0; i < dynarray_size(ht->da); i++){
+    for(int i = 0; i < dynarray_capacity(ht->da); i++){
         size += list_size((struct list*)dynarray_get(ht->da, i));
     }
 
@@ -157,36 +155,8 @@ void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
     newNode->key = key;
     newNode->value = value;
 
-    list_insert((struct list*)dynarray_get(ht->da, index), (void*)newNode);
+    list_insert(dynarray_get(ht->da, index), newNode);
 
-    if(ht_size(ht) / dynarray_capacity(ht->da) >= 4){
-        struct dynarray* old_da = ht->da;
-        int elements = ht_size(ht);
-        int k = 0;
-
-        _dynarray_resize(ht->da, dynarray_capacity(ht->da) * 2);
-
-        for(int i = 0; i < dynarray_capacity(ht->da); i++){
-            dynarray_insert(ht->da, (void*)list_create());
-        }
-
-        struct list* currList = dynarray_get(old_da, k);
-
-        for(int i = 0; i < elements; i++){
-            struct ht_node* popped = list_remove_first(currList);
-            if(popped == NULL){
-                k++;
-                currList = dynarray_get(old_da, k);
-            }
-
-            int index = ht_hash_func(ht, popped->key, convert);
-            list_insert(dynarray_get(ht->da, index), (void*)popped);
-        }
-
-        free(old_da);
-        old_da = NULL;
-    }
-    
     return;
 }
 

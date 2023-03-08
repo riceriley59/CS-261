@@ -26,8 +26,7 @@ void list_insert(struct list* list, void* val);
 void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b));
 int list_position(struct list* list, void* val, int (*cmp)(void* a, void* b));
 void list_reverse(struct list* list);
+
 int list_size(struct list* list);
-void* get_first(struct list*);
-void* list_remove_first(struct list*);
 
 #endif

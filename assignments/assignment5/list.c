@@ -27,10 +27,6 @@ struct list {
   int size;
 };
 
-int list_size(struct list* list){
-  return list->size;
-}
-
 /*
  * This function allocates and initializes a new, empty linked list and
  * returns a pointer to it.
@@ -131,8 +127,6 @@ void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b)) {
     prev = curr;
     curr = curr->next;
   }
-
-  list->size--;
 }
 
 /*
@@ -212,24 +206,6 @@ void list_reverse(struct list* list) {
   }
 }
 
-void* get_first(struct list* list){
-  return list->head->val;
-}
-
-void* list_remove_first(struct list* list){
-  if(list_size(list) == 0) return NULL;
-
-  void* value = get_first(list);
-
-  struct node* oldhead = list->head;
-  struct node* newhead = oldhead->next;
-
-  list->head = newhead;
-
-  free(oldhead);
-  oldhead = NULL;
-
-  list->size--;
-
-  return value;
+int list_size(struct list* list){
+  return list->size;
 }
