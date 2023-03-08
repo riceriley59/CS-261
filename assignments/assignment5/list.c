@@ -211,3 +211,23 @@ void list_reverse(struct list* list) {
 int list_size(struct list* list){
   return list->size;
 }
+
+void* list_get_first(struct list* list){
+  return list->head->val;
+}
+
+void* list_remove_first(struct list* list){
+  if(list_size(list) == 0) return NULL;
+
+  void* data = list_get_first(list);
+
+  struct node* oldhead = list->head;
+  struct node* newhead = oldhead->next;
+
+  list->head = newhead;
+
+  free(oldhead);
+  oldhead = NULL;
+
+  return data;
+}

@@ -89,6 +89,7 @@ void _dynarray_resize(struct dynarray* da, int new_capacity) {
   //free(da->data);
   da->data = new_data;
   da->capacity = new_capacity;
+  da->size = 0;
 }
 
 /*
