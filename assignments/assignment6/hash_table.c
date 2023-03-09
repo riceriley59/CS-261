@@ -175,20 +175,27 @@ void rehash(struct ht* ht, int (*convert)(void*)){
  */
 
 void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
-    int index = ht_hash_func(ht, key, convert);
+    void* data = ht_lookup(ht, key, convert);
 
-    struct ht_node* newNode = malloc(sizeof(struct ht_node));
-    newNode->key = key;
-    newNode->value = value;
+    if(data == NULL){
+        int index = ht_hash_func(ht, key, convert);
 
-    while(dynarray_get(ht->da, index) != NULL && dynarray_get(ht->da, index) != (void*)__TS__){
-        index = (index + 1)  % dynarray_capacity(ht->da);   
-    }
-    
-    dynarray_set(ht->da, index, (void*)newNode);
-    
-    if(load_factor(ht) >= 0.75){
-        rehash(ht, convert);
+        struct ht_node* newNode = malloc(sizeof(struct ht_node));
+        newNode->key = key;
+        newNode->value = value;
+
+        while(dynarray_get(ht->da, index) != NULL && dynarray_get(ht->da, index) != (void*)__TS__){
+            index = (index + 1)  % dynarray_capacity(ht->da);   
+        }
+        
+        dynarray_set(ht->da, index, (void*)newNode);
+        
+        if(load_factor(ht) >= 0.75){
+            rehash(ht, convert);
+        }
+    }else{
+        void** dval = &data;
+        *dval = value;
     }
 
     return;
@@ -214,17 +221,16 @@ void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
    
     int i = index;
 
-    while(1){
-        struct ht_node* curr = dynarray_get(ht->da, i);
-        
-        if(curr->key == key){
-            return curr->value;
-        }else if(curr == NULL || curr == (void*)__TS__){
-            i = (i + 1) % dynarray_capacity(ht->da);
-        }
+    while(dynarray_get(ht->da, index) != NULL){
+        if(dynarray_get(ht->da, index) == (void*)__TS__);
+        else if(((struct ht_node*)dynarray_get(ht->da, i))->key == key) return((struct ht_node*)dynarray_get(ht->da, i))->value;
+
+        index = (index + 1) % dynarray_capacity(ht->da);
 
         if(i == index) return NULL;
     }
+
+    return NULL;
 }
 
 
