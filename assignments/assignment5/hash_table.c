@@ -54,6 +54,15 @@ struct ht* ht_create(){
  */
 void ht_free(struct ht* ht){
     for(int i = 0; i < dynarray_capacity(ht->da); i++){
+        struct ht_node* data = list_remove_first((struct list*)dynarray_get(ht->da, i));
+
+        while(data != NULL){
+            free(data);
+            data = NULL;
+
+            data = list_remove_first((struct list*)dynarray_get(ht->da, i));
+        }
+
         list_free((struct list*)dynarray_get(ht->da, i));
         dynarray_set(ht->da, i, NULL);
     }
@@ -114,6 +123,8 @@ int ht_size(struct ht* ht){
  *     to convert it to a unique integer hashcode
  */
 int ht_hash_func(struct ht* ht, void* key, int (*convert)(void*)){
+    //32-bit integer hash function that I found online
+    //has a good distribution
     int keyint = convert(key);
     
     int c2 = 0x27d4eb2d; // a prime or an odd constant
@@ -178,11 +189,9 @@ void rehash(struct ht* ht, int (*convert)(void*)){
  */
 
 void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
-    if(ht_lookup(ht, key, convert) == NULL){
-        if(get_load_factor(ht) >= 4){
-            rehash(ht, convert);
-        }
+    void* look = ht_lookup(ht, key, convert);
 
+    if(look == NULL){
         int index = ht_hash_func(ht, key, convert);
 
         struct ht_node* newNode = malloc(sizeof(struct ht_node));
@@ -191,30 +200,12 @@ void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
 
         list_insert(dynarray_get(ht->da, index), newNode);
 
-    }else{
-        int index = ht_hash_func(ht, key, convert);
-        struct list* bucket = dynarray_get(ht->da, index);
-
-        struct list_iterator* it = list_iterator_create(bucket);
-
-        int i = 0;
-
-        while(list_iterator_has_next(it)){
-            struct ht_node* curr = list_iterator_next(it);
-
-            if(curr->key == key){
-                struct ht_node* newNode = malloc(sizeof(struct ht_node));
-                newNode->key = curr->key;
-                newNode->value = value;
-
-                list_replace_index(bucket, i, (void*)newNode);
-                return;
-            }
-
-            i++;
+        if(get_load_factor(ht) >= 4){
+            rehash(ht, convert);
         }
-
-        free(it);
+    }else{
+        void** look_address = &look;
+        *look_address = value;
     }
 
     return;
