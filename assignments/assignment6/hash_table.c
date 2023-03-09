@@ -175,27 +175,20 @@ void rehash(struct ht* ht, int (*convert)(void*)){
  */
 
 void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
-    void* data = ht_lookup(ht, key, convert);
+    int index = ht_hash_func(ht, key, convert);
 
-    if(data == NULL){
-        int index = ht_hash_func(ht, key, convert);
+    struct ht_node* newNode = malloc(sizeof(struct ht_node));
+    newNode->key = key;
+    newNode->value = value;
 
-        struct ht_node* newNode = malloc(sizeof(struct ht_node));
-        newNode->key = key;
-        newNode->value = value;
-
-        while(dynarray_get(ht->da, index) != NULL && dynarray_get(ht->da, index) != (void*)__TS__){
-            index = (index + 1)  % dynarray_capacity(ht->da);   
-        }
-        
-        dynarray_set(ht->da, index, (void*)newNode);
-        
-        if(load_factor(ht) >= 0.75){
-            rehash(ht, convert);
-        }
-    }else{
-        void** dval = &data;
-        *dval = value;
+    while(dynarray_get(ht->da, index) != NULL && dynarray_get(ht->da, index) != (void*)__TS__){
+        index = (index + 1)  % dynarray_capacity(ht->da);   
+    }
+    
+    dynarray_set(ht->da, index, (void*)newNode);
+    
+    if(load_factor(ht) >= 0.75){
+        rehash(ht, convert);
     }
 
     return;
