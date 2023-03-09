@@ -55,6 +55,13 @@ struct ht* ht_create(){
  *   ht - the hash table to be destroyed.  May not be NULL.
  */
 void ht_free(struct ht* ht){
+    for(int i = 0; i < dynarray_capacity(ht->da); i++){
+        struct ht_node* curr = dynarray_get(ht->da, i);
+
+        free(curr);
+        curr = NULL;
+    }
+
     dynarray_free(ht->da);
     ht->da = NULL;
 
