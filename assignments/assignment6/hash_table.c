@@ -39,6 +39,10 @@ struct ht* ht_create(){
 
     ht->da = dynarray_create();
 
+    for(int i = 0; i < dynarray_capacity(ht->da); i++){
+        dynarray_set(ht->da, i, NULL);
+    }
+
     return ht;
 }
 
@@ -126,6 +130,10 @@ void rehash(struct ht* ht, int (*convert)(void*)){
     
     _dynarray_resize(ht->da, dynarray_capacity(ht->da) * 2);
 
+    for(int i = 0; i < dynarray_capacity(ht->da); i++){
+        dynarray_set(ht->da, i, NULL);
+    }
+
     for(int i = 0; i < elements; i++){
         struct ht_node* curr = old_data[i];
 
@@ -200,10 +208,10 @@ void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
     int i = index;
 
     while(1){
-        void* curr = dynarray_get(ht->da, i);
+        struct ht_node* curr = dynarray_get(ht->da, i);
         
-        if(((struct ht_node*)curr)->key == key){
-            return ((struct ht_node*)curr)->value;
+        if(curr->key == key){
+            return curr->value;
         }else if(curr == NULL || curr == (void*)__TS__){
             i = (i + 1) % dynarray_capacity(ht->da);
         }
