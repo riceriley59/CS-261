@@ -23,7 +23,6 @@
  */
 struct ht{
     struct dynarray* da;
-    int n;
 };
 
 struct ht_node{
@@ -39,8 +38,6 @@ struct ht* ht_create(){
     struct ht* ht = malloc(sizeof(struct ht));
 
     ht->da = dynarray_create();
-
-    ht->n = 0;
 
     return ht;
 }
@@ -120,7 +117,7 @@ int ht_hash_func(struct ht* ht, void* key, int (*convert)(void*)){
 }
 
 int load_factor(struct ht* ht){
-    return ht->n / dynarray_capacity(ht->da);
+    return ht_size(ht) / dynarray_capacity(ht->da);
 }
 
 void rehash(struct ht* ht, int (*convert)(void*)){
@@ -169,11 +166,11 @@ void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
     newNode->key = key;
     newNode->value = value;
 
-    while(dynarray_get(ht->da, index) != NULL || dynarray_get(ht->da, index) == (void*)__TS__) index++;
+    while(dynarray_get(ht->da, index) != NULL && dynarray_get(ht->da, index) != (void*)__TS__){
+        index = (index + 1)  % dynarray_capacity(ht->da);   
+    }
     
-    dynarray_set(ht->da, index, (void*) newNode);
-
-    ht->n++;
+    dynarray_set(ht->da, index, (void*)newNode);
     
     if(load_factor(ht) >= 0.75){
         rehash(ht, convert);
@@ -198,10 +195,22 @@ void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
  *     to convert it to a unique integer hashcode
  */
 void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
-    /*
-     * FIXME: 
-     */
-    return NULL;
+    int index = ht_hash_func(ht, key, convert);
+   
+    int i = index;
+
+    while(1){
+        void* curr = dynarray_get(ht->da, i);
+        
+        if(curr == NULL || curr == (void*)__TS__){
+            i = (i + 1) % dynarray_capacity(ht->da);
+        }else if(((struct ht_node*)curr)->key == key){
+            return ((struct ht_node*)curr)->value;
+            break;
+        }
+
+        if(i == index) return NULL;
+    }
 }
 
 
@@ -224,7 +233,7 @@ void ht_remove(struct ht* ht, void* key, int (*convert)(void*)){
     int i = index;
 
     while(((struct ht_node*)dynarray_get(ht->da, i))->key != key) {
-        i = (i % dynarray_capacity(ht->da)) + 1;
+        i = (i + 1) % dynarray_capacity(ht->da);
 
         if(i == index) return;
     }
@@ -234,8 +243,6 @@ void ht_remove(struct ht* ht, void* key, int (*convert)(void*)){
 
     free(old_data);
     old_data = NULL;
-
-    ht->n--;
 
     return;
 } 
