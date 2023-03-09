@@ -202,11 +202,10 @@ void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
     while(1){
         void* curr = dynarray_get(ht->da, i);
         
-        if(curr == NULL || curr == (void*)__TS__){
-            i = (i + 1) % dynarray_capacity(ht->da);
-        }else if(((struct ht_node*)curr)->key == key){
+        if(((struct ht_node*)curr)->key == key){
             return ((struct ht_node*)curr)->value;
-            break;
+        }else if(curr == NULL || curr == (void*)__TS__){
+            i = (i + 1) % dynarray_capacity(ht->da);
         }
 
         if(i == index) return NULL;
