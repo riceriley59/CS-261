@@ -2,6 +2,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+int get_next_number(int n){
+	int sum = 0;
+	for(int i = 0; n > 0; n = n / 10) sum += (n % 10) * (n % 10);
+	return sum;
+}
+
 /*
  * return true (1) if n is happy, false (0) otherwise
  */
@@ -11,19 +17,11 @@ bool isHappy (int n){
 	int map[10000];
 
 	while(n > 0){
-		int sum = 0;
-
-		while(n > 0){
-			int x = n % 10;
-			sum += x * x;
-			n = n / 10;
-		}
-
-		n = sum;
+		n = get_next_number(n);
 		map[n]++;
 		
-		if(map[n] > 1) return 0;
 		if(n == 1) return 1;
+		if(map[n] > 1) break;
 	}
 
 	return 0;
