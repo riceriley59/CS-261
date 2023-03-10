@@ -20,7 +20,7 @@ int get_next_number(int n){
 bool isHappy (int n){
 	if(n == 1) return 1;
 
-	int map[10000];
+	int map[1000] = {0};
 
 	while(n > 0){
 		n = get_next_number(n);
