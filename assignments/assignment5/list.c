@@ -24,38 +24,7 @@ struct node {
  */
 struct list {
   struct node* head;
-  int size;
 };
-
-struct list_iterator{
-  struct list* list;
-  struct node* curr;
-};
-
-struct list_iterator* list_iterator_create(struct list* list){
-  struct list_iterator* it = malloc(sizeof(struct list_iterator*));
-
-  it->list = list;
-  it->curr = list->head;
-
-  return it;
-}
-
-void* list_iterator_next(struct list_iterator* it){
-  void* data = NULL;
-
-  if(it->curr){
-    data = it->curr->val;
-
-    it->curr = it->curr->next;
-  }
-
-  return data;
-}
-
-int list_iterator_has_next(struct list_iterator* it){
-  return it->curr != NULL;
-}
 
 /*
  * This function allocates and initializes a new, empty linked list and
@@ -64,9 +33,6 @@ int list_iterator_has_next(struct list_iterator* it){
 struct list* list_create() {
   struct list* list = malloc(sizeof(struct list));
   list->head = NULL;
-
-  list->size = 0;
-
   return list;
 }
 
@@ -113,8 +79,6 @@ void list_insert(struct list* list, void* val) {
   temp->val = val;
   temp->next = list->head;
   list->head = temp;
-
-  list->size++;
 }
 
 /*
@@ -157,8 +121,6 @@ void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b)) {
     prev = curr;
     curr = curr->next;
   }
-
-  list->size--;
 }
 
 /*
@@ -236,85 +198,4 @@ void list_reverse(struct list* list) {
     list->head = prev = curr;
     curr = next;
   }
-}
-
-int list_size(struct list* list){
-  return list->size;
-}
-
-void* list_get_first(struct list* list){
-  return list->head->val;
-}
-
-void* list_remove_first(struct list* list){
-  if(list_size(list) == 0) return NULL;
-
-  void* data = list_get_first(list);
-
-  struct node* oldhead = list->head;
-  struct node* newhead = oldhead->next;
-
-  list->head = newhead;
-
-  free(oldhead);
-  oldhead = NULL;
-
-  list->size--;
-
-  return data;
-}
-
-void list_remove_index(struct list* list, int index){
-  if(index == 0){
-    void* dummy = list_remove_first(list);
-    return;
-  }
-
-  struct node* curr = list->head;
-  struct node* prev = NULL;
-
-  int i = 0;
-
-  while(i != index){
-    prev = curr;
-    curr = curr->next;
-
-    i++;
-  }
-
-  prev->next = curr->next;
-
-  free(curr);
-  curr = NULL;
-
-  list->size--;
-}
-
-void list_replace_index(struct list* list, int index, void* value){
-  void* old_val = NULL;
-
-  if(index == 0){
-    old_val = list->head->val;
-
-    free(old_val);
-    old_val = NULL;
-
-    list->head->val = value;
-    return;
-  }
-
-  struct node* curr = list->head;
-
-  int i = 0;
-
-  while(i != index){
-    curr = curr->next;
-    i++;
-  }
-
-  old_val = curr->val;
-  curr->val = value;
-
-  free(old_val);
-  old_val = NULL;
 }

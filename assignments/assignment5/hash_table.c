@@ -14,6 +14,8 @@
 #include "list.h"
 #include "hash_table.h"
 
+#define __TS__ 9999
+
 
 /*
  * This is the structure that represents a hash table.  You must define
@@ -28,7 +30,6 @@ struct ht_node{
     void* value;
 };
 
-
 /*
  * This function should allocate and initialize an empty hash table and
  * return a pointer to it.
@@ -37,8 +38,9 @@ struct ht* ht_create(){
     struct ht* ht = malloc(sizeof(struct ht));
 
     ht->da = dynarray_create();
+
     for(int i = 0; i < dynarray_capacity(ht->da); i++){
-        dynarray_insert(ht->da, (void*)list_create());
+        dynarray_set(ht->da, i, NULL);
     }
 
     return ht;
@@ -54,17 +56,12 @@ struct ht* ht_create(){
  */
 void ht_free(struct ht* ht){
     for(int i = 0; i < dynarray_capacity(ht->da); i++){
-        struct ht_node* data = list_remove_first((struct list*)dynarray_get(ht->da, i));
+        void* curr = dynarray_get(ht->da, i);
 
-        while(data != NULL){
-            free(data);
-            data = NULL;
-
-            data = list_remove_first((struct list*)dynarray_get(ht->da, i));
+        if(curr != NULL){
+            free(curr);
+            curr = NULL;
         }
-
-        list_free((struct list*)dynarray_get(ht->da, i));
-        dynarray_set(ht->da, i, NULL);
     }
 
     dynarray_free(ht->da);
@@ -88,11 +85,7 @@ void ht_free(struct ht* ht){
  *   Should return 1 if ht is empty and 0 otherwise.
  */
 int ht_isempty(struct ht* ht){
-    for(int i = 0; i < dynarray_capacity(ht->da); i++){
-        if(list_size((struct list*)dynarray_get(ht->da, i)) != 0) return 0;
-    }
-
-    return 1;
+    return !ht_size(ht);
 }
 
 
@@ -104,7 +97,7 @@ int ht_size(struct ht* ht){
     int size = 0;
 
     for(int i = 0; i < dynarray_capacity(ht->da); i++){
-        size += list_size((struct list*)dynarray_get(ht->da, i));
+        if(dynarray_get(ht->da, i) != NULL && dynarray_get(ht->da, i) != (void*)__TS__) size++;
     }
 
     return size;
@@ -123,8 +116,6 @@ int ht_size(struct ht* ht){
  *     to convert it to a unique integer hashcode
  */
 int ht_hash_func(struct ht* ht, void* key, int (*convert)(void*)){
-    //32-bit integer hash function that I found online
-    //has a good distribution
     int keyint = convert(key);
     
     int c2 = 0x27d4eb2d; // a prime or an odd constant
@@ -138,35 +129,32 @@ int ht_hash_func(struct ht* ht, void* key, int (*convert)(void*)){
     return keyint % dynarray_capacity(ht->da);
 }
 
-int get_load_factor(struct ht* ht){
+int load_factor(struct ht* ht){
     return ht_size(ht) / dynarray_capacity(ht->da);
 }
 
 void rehash(struct ht* ht, int (*convert)(void*)){
-    void** old_da = get_data(ht->da);
+    void** old_data = get_data(ht->da);
     int elements = dynarray_capacity(ht->da);
-
+    
     _dynarray_resize(ht->da, dynarray_capacity(ht->da) * 2);
 
     for(int i = 0; i < dynarray_capacity(ht->da); i++){
-        dynarray_insert(ht->da, (void*)list_create());
+        dynarray_set(ht->da, i, NULL);
     }
 
     for(int i = 0; i < elements; i++){
-        struct ht_node* data = list_remove_first((struct list*)old_da[i]);
+        struct ht_node* curr = old_data[i];
 
-        while(data != NULL){
-            int index = ht_hash_func(ht, data->key, convert);
-            list_insert(dynarray_get(ht->da, index), (void*)data);
+        if(curr == NULL || curr == (void*)__TS__) continue;
 
-            data = list_remove_first((struct list*)old_da[i]);
-        }
+        int index = ht_hash_func(ht, curr->key, convert);
 
-        list_free((struct list*)old_da[i]);
+        dynarray_set(ht->da, index, (void*)curr);
     }
 
-    free(old_da);
-    old_da = NULL;
+    free(old_data);
+    old_data = NULL;
 }
 
 /*
@@ -189,23 +177,20 @@ void rehash(struct ht* ht, int (*convert)(void*)){
  */
 
 void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
-    void* look = ht_lookup(ht, key, convert);
+    int index = ht_hash_func(ht, key, convert);
 
-    if(look == NULL){
-        int index = ht_hash_func(ht, key, convert);
+    struct ht_node* newNode = malloc(sizeof(struct ht_node));
+    newNode->key = key;
+    newNode->value = value;
 
-        struct ht_node* newNode = malloc(sizeof(struct ht_node));
-        newNode->key = key;
-        newNode->value = value;
+    while(dynarray_get(ht->da, index) != NULL && dynarray_get(ht->da, index) != (void*)__TS__){
+        index = (index + 1)  % dynarray_capacity(ht->da);   
+    }
+    
+    dynarray_set(ht->da, index, (void*)newNode);
 
-        list_insert(dynarray_get(ht->da, index), newNode);
-
-        if(get_load_factor(ht) >= 4){
-            rehash(ht, convert);
-        }
-    }else{
-        void** look_address = &look;
-        *look_address = value;
+    if(load_factor(ht) >= 0.75){
+        rehash(ht, convert);
     }
 
     return;
@@ -228,19 +213,12 @@ void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
  */
 void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
     int index = ht_hash_func(ht, key, convert);
-    struct list* bucket = dynarray_get(ht->da, index);
 
-    struct list_iterator* it = list_iterator_create(bucket);
+    while(dynarray_get(ht->da, index) != NULL){
+        if(((struct ht_node*)dynarray_get(ht->da, index))->key == key) return ((struct ht_node*)dynarray_get(ht->da, index))->value;
 
-    while(list_iterator_has_next(it)){
-        struct ht_node* curr = list_iterator_next(it);
-
-        if(curr->key == key){
-            return curr->value;
-        }
+        index = (index + 1) % dynarray_capacity(ht->da);
     }
-
-    free(it);
 
     return NULL;
 }
@@ -261,23 +239,19 @@ void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
  */
 void ht_remove(struct ht* ht, void* key, int (*convert)(void*)){
     int index = ht_hash_func(ht, key, convert);
-    struct list* bucket = dynarray_get(ht->da, index);
 
-    struct list_iterator* it = list_iterator_create(bucket);
+    while(dynarray_get(ht->da, index) != NULL) {
+        if(((struct ht_node*)dynarray_get(ht->da, index))->key == key){
+            void* old_data = dynarray_get(ht->da, index);
+            dynarray_set(ht->da, index, (void*)__TS__);
 
-    int i = 0;
-
-    while(list_iterator_has_next(it)){
-        struct ht_node* curr = list_iterator_next(it);
-
-        if(curr->key == key){
-            list_remove_index(bucket, i);
+            free(old_data);
+            old_data = NULL;
             return;
         }
 
-        i++;
+        index = (index + 1) % dynarray_capacity(ht->da);
     }
 
-    free(it);
     return;
 } 
