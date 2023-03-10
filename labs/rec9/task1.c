@@ -3,20 +3,19 @@
 
 /* 
  * return the number that is missing in the array
- */
+*/
 int missingNumber(int* nums, int size){
-	int should_be_sum = 0;
-	int real_sum = 0;
+	int map[size + 1];
+
+	for(int i = 0; i < size; i++){
+		map[nums[i]] = 1;
+	}
 
 	for(int i = 0; i < size + 1; i++){
-		should_be_sum += i;
+		if(map[i] != 1) return i;
 	}
 
-	for(int i  = 0; i < size; i++){
-		real_sum += nums[i];
-	}
-
-	return should_be_sum - real_sum;
+	return -1;
 }
 
 
