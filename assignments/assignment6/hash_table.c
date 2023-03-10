@@ -211,16 +211,11 @@ void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
  */
 void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
     int index = ht_hash_func(ht, key, convert);
-   
-    int i = index;
 
     while(dynarray_get(ht->da, index) != NULL){
-        if(dynarray_get(ht->da, index) == (void*)__TS__);
-        else if(((struct ht_node*)dynarray_get(ht->da, i))->key == key) return((struct ht_node*)dynarray_get(ht->da, i))->value;
+        if(((struct ht_node*)dynarray_get(ht->da, index))->key == key) return ((struct ht_node*)dynarray_get(ht->da, index))->value;
 
         index = (index + 1) % dynarray_capacity(ht->da);
-
-        if(i == index) return NULL;
     }
 
     return NULL;
