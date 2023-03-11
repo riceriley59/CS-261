@@ -241,7 +241,7 @@ void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
         }
 
         index = (index + 1) % ht->capacity;
-	if(i == index) break;
+	    if(i == index) break;
 
         curr = dynarray_get(ht->da, index);
     }
@@ -283,7 +283,7 @@ void ht_remove(struct ht* ht, void* key, int (*convert)(void*)){
         }
 
         index = (index + 1) % ht->capacity;
-	if(i == index) break;
+	    if(i == index) break;
 
         curr = dynarray_get(ht->da, index);
     }
