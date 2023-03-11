@@ -43,9 +43,7 @@ struct ht* ht_create(){
     ht->size = 0;
     ht->capacity = 2;
 
-    for (int i = 0; i < ht->capacity; i++) {
-        dynarray_set(ht->da, i, NULL);  // init all elements as NULL
-    }
+    for (int i = 0; i < ht->capacity; i++) dynarray_set(ht->da, i, NULL);
 
     return ht;
 }
@@ -62,7 +60,7 @@ void ht_free(struct ht* ht){
     for (int i = 0; i < ht->capacity; i++) {
         struct ht_node* temp = dynarray_get(ht->da, i);
 
-        if (temp != NULL && temp != (void*)__TS__ ) {
+        if (temp != NULL && temp != (void*)__TS__) {
             free(temp);
             temp = NULL;
         }
@@ -135,7 +133,7 @@ void ht_rehash(struct ht* ht, int (*convert) (void*)) {
     for (int i = 0; i < ht->capacity / 2; i++) {
         struct ht_node* curr = dynarray_get(ht->da, i);
 
-        if (curr != NULL && curr != (void*) __TS__ ) {
+        if (curr != NULL && curr != (void*)__TS__) {
             int index = ht_hash_func(ht, curr->key, convert);
 
             struct ht_node* new_node = malloc(sizeof(struct ht_node));
@@ -184,15 +182,13 @@ float get_load_factor(struct ht* ht){
  */
 
 void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
-    if (get_load_factor(ht) >= 0.75) {
-        ht_rehash(ht, convert);
-    }
+    if (get_load_factor(ht) >= 0.75) ht_rehash(ht, convert);
 
     int index = ht_hash_func(ht, key, convert);
 
     struct ht_node* curr = dynarray_get(ht->da, index);
 
-    while (curr != NULL && curr != (void*) __TS__ ) {
+    while (curr != NULL && curr != (void*)__TS__) {
         if (convert(curr->key) == convert(key)) {
             curr->val = value; 
             return;
@@ -236,9 +232,7 @@ void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
     int i = index;
 
     while (curr != NULL) {
-        if (curr != (void*)__TS__ && convert(curr->key) == convert(key)) {
-            return curr->val;
-        }
+        if (curr != (void*)__TS__ && convert(curr->key) == convert(key)) return curr->val;
 
         index = (index + 1) % ht->capacity;
 	    if(i == index) break;
