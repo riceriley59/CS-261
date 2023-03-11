@@ -233,12 +233,15 @@ void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
 
     struct ht_node* curr = dynarray_get(ht->da, index);
 
+    int i = index;
+
     while (curr != NULL) {
         if (curr != (void*)__TS__ && convert(curr->key) == convert(key)) {
             return curr->val;
         }
 
         index = (index + 1) % ht->capacity;
+	if(i == index) break;
 
         curr = dynarray_get(ht->da, index);
     }
@@ -265,6 +268,8 @@ void ht_remove(struct ht* ht, void* key, int (*convert)(void*)){
     int index = ht_hash_func(ht, key, convert);
     struct ht_node* curr = dynarray_get(ht->da, index);
 
+    int i = index;
+
     while (curr != NULL) {
         if (curr != (void*)__TS__ && convert(curr->key) == convert(key)) {
             void* old_data = curr;
@@ -278,6 +283,7 @@ void ht_remove(struct ht* ht, void* key, int (*convert)(void*)){
         }
 
         index = (index + 1) % ht->capacity;
+	if(i == index) break;
 
         curr = dynarray_get(ht->da, index);
     }
