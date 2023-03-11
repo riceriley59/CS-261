@@ -80,15 +80,6 @@ void _dynarray_resize(struct dynarray* da, int new_capacity) {
   void** new_data = malloc(new_capacity * sizeof(void*));
   assert(new_data);
 
-/*
-   * Copy data from the old array to the new one.
-  for (int i = 0; i < da->size; i++) {
-    new_data[i] = da->data[i];
-  }
-   * Put the new array into the dynarray struct.
-  free(da->data); 
-*/
-
 
   da->data = new_data;
   da->capacity = new_capacity;
