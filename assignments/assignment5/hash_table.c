@@ -136,9 +136,9 @@ void ht_rehash(struct ht* ht, int (*convert) (void*)) {
         if (curr != NULL && curr != (void*)__TS__) {
             int index = ht_hash_func(ht, curr->key, convert);
 
-            struct ht_node* new_node = malloc(sizeof(struct ht_node));
-            new_node->key = curr->key;
-            new_node->val = curr->val;
+            struct ht_node* newNode = malloc(sizeof(struct ht_node));
+            newNode->key = curr->key;
+            newNode->val = curr->val;
 
             struct ht_node* rehashNode = dynarray_get(new_da, index);
 
@@ -147,7 +147,7 @@ void ht_rehash(struct ht* ht, int (*convert) (void*)) {
                 rehashNode = dynarray_get(new_da, index);
             }
 
-            dynarray_set(new_da, index, (void*)new_node);
+            dynarray_set(new_da, index, (void*)newNode);
 
             free(curr);
             curr = NULL;
