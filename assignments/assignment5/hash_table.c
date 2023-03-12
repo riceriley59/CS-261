@@ -16,7 +16,6 @@
 
 #define __TS__ 9999
 
-
 /*
  * This is the structure that represents a hash table.  You must define
  * this struct to contain the data needed to implement a hash table.
@@ -43,7 +42,7 @@ struct ht* ht_create(){
     ht->size = 0;
     ht->capacity = 2;
 
-    for (int i = 0; i < ht->capacity; i++) dynarray_set(ht->da, i, NULL);
+    for(int i = 0; i < ht->capacity; i++) dynarray_set(ht->da, i, NULL);
 
     return ht;
 }
@@ -57,17 +56,21 @@ struct ht* ht_create(){
  *   ht - the hash table to be destroyed.  May not be NULL.
  */
 void ht_free(struct ht* ht){
-    for (int i = 0; i < ht->capacity; i++) {
+    for(int i = 0; i < ht->capacity; i++) {
         struct ht_node* temp = dynarray_get(ht->da, i);
 
-        if (temp != NULL && temp != (void*)__TS__) {
+        if(temp != NULL && temp != (void*)__TS__) {
             free(temp);
             temp = NULL;
         }
     }
 
-    dynarray_free(ht->da); // free dynamic array
-    free(ht); // free ht struct
+    dynarray_free(ht->da);
+    ht->da = NULL;
+
+    free(ht);
+    ht = NULL;
+
     return;
 }
 
@@ -95,6 +98,10 @@ int ht_size(struct ht* ht){
     return ht->size;
 }
 
+float load_factor(struct ht* ht){
+    return ht->size / ht->capacity;
+}
+
 /*
  * This function takes a key, maps it to an integer index value in the hash table,
  * and returns it. The hash algorithm is totally up to you. Make sure to consider
@@ -109,31 +116,28 @@ int ht_size(struct ht* ht){
 int ht_hash_func(struct ht* ht, void* key, int (*convert)(void*)){
     int keyint = convert(key);
     
-    keyint = ~keyint + (keyint << 15); // key = (key << 15) - key - 1;
+    keyint = ~keyint + (keyint << 15);
     keyint = keyint ^ (keyint >> 12);
     keyint = keyint + (keyint << 2);
     keyint = keyint ^ (keyint >> 4);
-    keyint = keyint * 2057; // key = (key + (key << 3)) + (key << 11);
+    keyint = keyint * 2057;
     keyint = keyint ^ (keyint >> 16);
     
     return keyint % ht->capacity;
 }
 
 void ht_rehash(struct ht* ht, int (*convert) (void*)) {
-    
     struct dynarray* new_da = dynarray_create();
     _dynarray_resize(new_da, ht->capacity * 2);
 
     ht->capacity *= 2;
 
-    for (int i = 0; i < ht->capacity; i++) {
-        dynarray_set(new_da, i, NULL);
-    }
+    for(int i = 0; i < ht->capacity; i++) dynarray_set(new_da, i, NULL);
 
-    for (int i = 0; i < ht->capacity / 2; i++) {
+    for(int i = 0; i < ht->capacity / 2; i++) {
         struct ht_node* curr = dynarray_get(ht->da, i);
 
-        if (curr != NULL && curr != (void*)__TS__) {
+        if(curr != NULL && curr != (void*)__TS__) {
             int index = ht_hash_func(ht, curr->key, convert);
 
             struct ht_node* newNode = malloc(sizeof(struct ht_node));
@@ -142,7 +146,7 @@ void ht_rehash(struct ht* ht, int (*convert) (void*)) {
 
             struct ht_node* rehashNode = dynarray_get(new_da, index);
 
-            while (rehashNode != NULL) {
+            while(rehashNode != NULL) {
                 index = (index + 1) % ht->capacity;
                 rehashNode = dynarray_get(new_da, index);
             }
@@ -156,10 +160,6 @@ void ht_rehash(struct ht* ht, int (*convert) (void*)) {
 
     dynarray_free(ht->da);
     ht->da = new_da;
-}
-
-float load_factor(struct ht* ht){
-    return ht->size / ht->capacity;
 }
 
 /*
@@ -182,14 +182,14 @@ float load_factor(struct ht* ht){
  */
 
 void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
-    if (load_factor(ht) >= 0.75) ht_rehash(ht, convert);
+    if(load_factor(ht) >= 0.75) ht_rehash(ht, convert);
 
     int index = ht_hash_func(ht, key, convert);
 
     struct ht_node* curr = dynarray_get(ht->da, index);
 
-    while (curr != NULL && curr != (void*)__TS__) {
-        if (convert(curr->key) == convert(key)) {
+    while(curr != NULL && curr != (void*)__TS__) {
+        if(convert(curr->key) == convert(key)) {
             curr->val = value; 
             return;
         }
@@ -231,8 +231,8 @@ void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
 
     int i = index;
 
-    while (curr != NULL) {
-        if (curr != (void*)__TS__ && convert(curr->key) == convert(key)) return curr->val;
+    while(curr != NULL) {
+        if(curr != (void*)__TS__ && convert(curr->key) == convert(key)) return curr->val;
 
         index = (index + 1) % ht->capacity;
 	    if(i == index) break;
@@ -264,8 +264,8 @@ void ht_remove(struct ht* ht, void* key, int (*convert)(void*)){
 
     int i = index;
 
-    while (curr != NULL) {
-        if (curr != (void*)__TS__ && convert(curr->key) == convert(key)) {
+    while(curr != NULL) {
+        if(curr != (void*)__TS__ && convert(curr->key) == convert(key)) {
             void* old_data = curr;
             dynarray_set(ht->da, index, (void*)__TS__);
 

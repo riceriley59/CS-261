@@ -54,7 +54,10 @@ struct dynarray* dynarray_create() {
 void dynarray_free(struct dynarray* da) {
   assert(da);
   free(da->data);
+  da->data = NULL;
+
   free(da);
+  da = NULL;
 }
 
 /*
@@ -73,6 +76,9 @@ int dynarray_size(struct dynarray* da) {
  */
 void _dynarray_resize(struct dynarray* da, int new_capacity) {
   assert(new_capacity > da->size);
+
+  free(da->data);
+  da->data = NULL;
 
   /*
    * Allocate space for the new array.
