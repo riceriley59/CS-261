@@ -158,7 +158,7 @@ void ht_rehash(struct ht* ht, int (*convert) (void*)) {
     ht->da = new_da;
 }
 
-float get_load_factor(struct ht* ht){
+float load_factor(struct ht* ht){
     return ht->size / ht->capacity;
 }
 
@@ -182,7 +182,7 @@ float get_load_factor(struct ht* ht){
  */
 
 void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
-    if (get_load_factor(ht) >= 0.75) ht_rehash(ht, convert);
+    if (load_factor(ht) >= 0.75) ht_rehash(ht, convert);
 
     int index = ht_hash_func(ht, key, convert);
 
