@@ -266,11 +266,10 @@ void ht_remove(struct ht* ht, void* key, int (*convert)(void*)){
 
     while(curr != NULL) {
         if(curr != (void*)__TS__ && convert(curr->key) == convert(key)) {
-            void* old_data = curr;
             dynarray_set(ht->da, index, (void*)__TS__);
 
-            free(old_data);
-            old_data = NULL;
+            free(curr);
+            curr = NULL;
 
             ht->size--;
             return;
