@@ -190,25 +190,24 @@ void ht_rehash(struct ht* ht, int (*convert) (void*)) {
             //calculate a new index
             int index = ht_hash_func(ht, curr->key, convert);
 
-            //create a new node with the same values as our 
-            //struct ht_node* newNode = malloc(sizeof(struct ht_node));
-            //newNode->key = curr->key;
-            //newNode->val = curr->val;
-
+            //get the value at our index to make sure we handle collisions
             struct ht_node* rehashNode = dynarray_get(new_da, index);
 
+            //while there are values we will keep on probing 
+            //until we find an open spot
             while(rehashNode != NULL) {
-                index = (index + 1) % ht->capacity;
-                rehashNode = dynarray_get(new_da, index);
+                index = (index + 1) % ht->capacity; //add one to index
+                rehashNode = dynarray_get(new_da, index); //update value
             }
 
+            //now that we have found open spot insert our curr node
+            //that we are re-indexing from the old array at the index
+            //we just found
             dynarray_set(new_da, index, (void*)curr);
-
-            //free(curr);
-            //curr = NULL;
         } 
     }
 
+    //free old array and then update the hash table to point to the new array
     dynarray_free(ht->da);
     ht->da = new_da;
 }
@@ -231,30 +230,40 @@ void ht_rehash(struct ht* ht, int (*convert) (void*)) {
  *   convert - pointer to a function that can be passed the void* key from
  *     to convert it to a unique integer hashcode
  */
-
 void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
+    //if the load factore is greater than or equal to 0.75 then rehash
     if(load_factor(ht) >= 0.75) ht_rehash(ht, convert);
 
+    //calculate index for given key
     int index = ht_hash_func(ht, key, convert);
 
+    //get node at that the index
     struct ht_node* curr = dynarray_get(ht->da, index);
 
+    //while the current index isn't empty then keep on probing
     while(curr != NULL && curr != (void*)__TS__) {
+        //if the key is already in the hash table then update
+        //the value of that key and then return
         if(convert(curr->key) == convert(key)) {
             curr->val = value; 
             return;
         }
 
+        //add one to index since we are probing and then
+        //update our current node to new index
         index = (index + 1) % ht->capacity;
-
         curr = dynarray_get(ht->da, index);
     }
 
+    //create new node with key and value pair
     struct ht_node* newNode = malloc(sizeof(struct ht_node));
     newNode->key = key;
     newNode->val = value;
 
+    //insert that newnode at the appropriate index that we found
     dynarray_set(ht->da, index, (void*)newNode);
+
+    //add one to size
     ht->size++;
 
     return;
@@ -276,23 +285,34 @@ void ht_insert(struct ht* ht, void* key, void* value, int (*convert)(void*)){
  *     to convert it to a unique integer hashcode
  */
 void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
+    //get index from hash function from key that is passed
     int index = ht_hash_func(ht, key, convert);
 
+    //get node at the index
     struct ht_node* curr = dynarray_get(ht->da, index);
 
+    //store starting position so we can check if we have looped 
+    //through the whole array
     int i = index;
 
+    //while the node isn't empty
     while(curr != NULL) {
+        //if the node isn't a tombstone and the key is equal to key were searching for
+        //then we found the node so we return the nodes value
         if(curr != (void*)__TS__ && convert(curr->key) == convert(key)) return curr->val;
 
+        //add one to the index
         index = (index + 1) % ht->capacity;
+
+        //if we have looped through the whole array and haven't found anything then 
+        //the key doesn't exist so break and return NULL
 	    if(i == index) break;
 
+        //update value of curr for next iteration
         curr = dynarray_get(ht->da, index);
     }
 
     return NULL;
-
 }
 
 
@@ -310,25 +330,41 @@ void* ht_lookup(struct ht* ht, void* key, int (*convert)(void*)){
  *     to convert it to a unique integer hashcode
  */
 void ht_remove(struct ht* ht, void* key, int (*convert)(void*)){
+    //get index from hash function from key that is passed
     int index = ht_hash_func(ht, key, convert);
+
+    //get node at index
     struct ht_node* curr = dynarray_get(ht->da, index);
 
+    //store starting position so we can check if we have looped 
+    //through the whole array
     int i = index;
 
+    //while the node isn't empty
     while(curr != NULL) {
+        //if the node isn't a tombstone and the key is equal to key were searching for
+        //then we found the node so we will go about removing it
         if(curr != (void*)__TS__ && convert(curr->key) == convert(key)) {
+            //replace the current node with a tombstone value in the array
             dynarray_set(ht->da, index, (void*)__TS__);
-
+            
+            //free current node's value
             free(curr);
             curr = NULL;
 
+            //decrease size and return
             ht->size--;
             return;
         }
-
+        
+        //add one to the index
         index = (index + 1) % ht->capacity;
+
+        //if we have looped through the whole array and haven't found anything then 
+        //the key doesn't exist so break and return
 	    if(i == index) break;
 
+        //update value of curr for next iteration
         curr = dynarray_get(ht->da, index);
     }
 
