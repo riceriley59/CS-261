@@ -177,11 +177,3 @@ void dynarray_set(struct dynarray* da, int idx, void* val) {
 
   da->data[idx] = val;
 }
-
-int dynarray_capacity(struct dynarray* da){
-  return da->capacity;
-}
-
-void** get_data(struct dynarray* da){
-  return da->data;
-}

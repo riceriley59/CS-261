@@ -14,6 +14,7 @@
 #include "list.h"
 #include "hash_table.h"
 
+//make constant value for our tombstone value
 #define __TS__ 9999
 
 /*
@@ -26,6 +27,8 @@ struct ht {
     int capacity;
 };
 
+//this struct allows us to store key value pair
+//in dynarray
 struct ht_node {
     void* key;
     void* val;
@@ -38,10 +41,14 @@ struct ht_node {
  */
 struct ht* ht_create(){
     struct ht* ht = malloc(sizeof(struct ht));
+    
     ht->da = dynarray_create();
+
+    //initialize values
     ht->size = 0;
     ht->capacity = 2;
 
+    //set all values to NULL
     for(int i = 0; i < ht->capacity; i++) dynarray_set(ht->da, i, NULL);
 
     return ht;
@@ -56,18 +63,24 @@ struct ht* ht_create(){
  *   ht - the hash table to be destroyed.  May not be NULL.
  */
 void ht_free(struct ht* ht){
+    //go through the whole hash table
     for(int i = 0; i < ht->capacity; i++) {
-        struct ht_node* temp = dynarray_get(ht->da, i);
+        //get current value at index in hash table 
+        void* temp = dynarray_get(ht->da, i);
 
+        //if the current value isn't empty then free it and
+        //set to null
         if(temp != NULL && temp != (void*)__TS__) {
             free(temp);
             temp = NULL;
         }
     }
 
+    //free dynarray
     dynarray_free(ht->da);
     ht->da = NULL;
 
+    //free hash table
     free(ht);
     ht = NULL;
 
@@ -86,7 +99,7 @@ void ht_free(struct ht* ht){
  *   Should return 1 if ht is empty and 0 otherwise.
  */
 int ht_isempty(struct ht* ht){
-    return !ht_size(ht);
+    return !ht_size(ht); //if size is 0 returns 1
 }
 
 
@@ -95,9 +108,20 @@ int ht_isempty(struct ht* ht){
  * elements stored in it, not the capacity).
  */
 int ht_size(struct ht* ht){
-    return ht->size;
+    return ht->size; //return our size stored in our hash table struct
 }
 
+/*
+ * This function should return the load factor of the hash table by calculating 
+ * the number of elements divided by the number of buckets.
+ *
+ * Params:
+ *   ht - the hash table whose load factor is to be checked.  May not be
+ *     NULL.
+ *
+ * Return:
+ *   Should return passed hash table's load factor.
+ */
 float load_factor(struct ht* ht){
     return ht->size / ht->capacity;
 }
@@ -114,8 +138,12 @@ float load_factor(struct ht* ht){
  *     to convert it to a unique integer hashcode
  */
 int ht_hash_func(struct ht* ht, void* key, int (*convert)(void*)){
+    //convert void* key to integer
     int keyint = convert(key);
     
+    //I found this signed 32 bit mix hash function online. I chose it
+    //because it has good distribution, speed, and uniformity. It can be found at
+    //https://gist.github.com/badboy/6267743
     keyint = ~keyint + (keyint << 15);
     keyint = keyint ^ (keyint >> 12);
     keyint = keyint + (keyint << 2);
@@ -123,26 +151,49 @@ int ht_hash_func(struct ht* ht, void* key, int (*convert)(void*)){
     keyint = keyint * 2057;
     keyint = keyint ^ (keyint >> 16);
     
+    //return our hashed value moduloed with the hash table's capacity
+    //so that the value stays in range of our hash table.
     return keyint % ht->capacity;
 }
 
+/*
+ * This function is called whenever the load factor of our hash table is above
+ * 0.75, or 3/4 of the table is full. This resizes the array to twice the old amount
+ * and then rehashes all the elements into the new array. Doing this allows us to maintain
+ * an average runtime complexity of O(1) for lookup, insert, and remove in our hash table.
+ *
+ * Params:
+ *   ht - the hash table into which to resize and rehash.  May not be NULL.
+ *   convert - pointer to a function that can be passed the void* key from
+ *     to convert it to a unique integer hashcode.
+ */
 void ht_rehash(struct ht* ht, int (*convert) (void*)) {
+    //create a new dynarray and resize it to twice the 
+    //old amount
     struct dynarray* new_da = dynarray_create();
     _dynarray_resize(new_da, ht->capacity * 2);
 
+    //change our hash table's capacity to twice it's old amount
     ht->capacity *= 2;
 
+    //set all the values in the new array to NULL
     for(int i = 0; i < ht->capacity; i++) dynarray_set(new_da, i, NULL);
 
+    //go through the old hash table's contents and rehash them into the 
+    //new array
     for(int i = 0; i < ht->capacity / 2; i++) {
+        //get node at index i
         struct ht_node* curr = dynarray_get(ht->da, i);
 
+        //if the node isn't empty
         if(curr != NULL && curr != (void*)__TS__) {
+            //calculate a new index
             int index = ht_hash_func(ht, curr->key, convert);
 
-            struct ht_node* newNode = malloc(sizeof(struct ht_node));
-            newNode->key = curr->key;
-            newNode->val = curr->val;
+            //create a new node with the same values as our 
+            //struct ht_node* newNode = malloc(sizeof(struct ht_node));
+            //newNode->key = curr->key;
+            //newNode->val = curr->val;
 
             struct ht_node* rehashNode = dynarray_get(new_da, index);
 
@@ -151,10 +202,10 @@ void ht_rehash(struct ht* ht, int (*convert) (void*)) {
                 rehashNode = dynarray_get(new_da, index);
             }
 
-            dynarray_set(new_da, index, (void*)newNode);
+            dynarray_set(new_da, index, (void*)curr);
 
-            free(curr);
-            curr = NULL;
+            //free(curr);
+            //curr = NULL;
         } 
     }
 
